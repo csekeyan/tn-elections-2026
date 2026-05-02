@@ -1,7 +1,7 @@
 // /api/results - Election results with 30s KV cache
 // cache.put() doesn't work on .pages.dev, so we use KV instead
 
-const CACHE_TTL = 30; // seconds
+const CACHE_TTL = 120; // seconds (2 min — stays under free KV write limit)
 const KV_KEY = 'api:results';
 
 // ── May 4: set true, update UPSTREAM_URL ──
