@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+data/tn_ac_backup.geojson
+src/assets/tn-constituencies.geojson
+src/assets/parties.json

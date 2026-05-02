@@ -1,0 +1,27 @@
+{
+  "parties": {
+    "DMK": { "name": "DMK", "fullName": "Dravida Munnetra Kazhagam", "color": "#c4515f", "alliance": "DMK+", "leader": "M.K. Stalin", "leaderImg": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/M._K._Stalin_2023.jpg/220px-M._K._Stalin_2023.jpg" },
+    "INC": { "name": "INC", "fullName": "Indian National Congress", "color": "#5b9bd5", "alliance": "DMK+", "leader": "Rahul Gandhi", "leaderImg": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Rahul_Gandhi_2023.jpg/220px-Rahul_Gandhi_2023.jpg" },
+    "VCK": { "name": "VCK", "fullName": "Viduthalai Chiruthaigal Katchi", "color": "#5b7ba8", "alliance": "DMK+", "leader": "Thol. Thirumavalavan", "leaderImg": "" },
+    "CPI": { "name": "CPI", "fullName": "Communist Party of India", "color": "#b85c5c", "alliance": "DMK+", "leader": "D. Raja", "leaderImg": "" },
+    "CPI(M)": { "name": "CPI(M)", "fullName": "Communist Party of India (Marxist)", "color": "#a04848", "alliance": "DMK+", "leader": "Sitaram Yechury", "leaderImg": "" },
+    "IUML": { "name": "IUML", "fullName": "Indian Union Muslim League", "color": "#4a8a6a", "alliance": "DMK+", "leader": "K.M. Kader Mohideen", "leaderImg": "" },
+    "MDMK": { "name": "MDMK", "fullName": "Marumalarchi Dravida Munnetra Kazhagam", "color": "#c47a45", "alliance": "DMK+", "leader": "Vaiko", "leaderImg": "" },
+    "AIADMK": { "name": "AIADMK", "fullName": "All India Anna Dravida Munnetra Kazhagam", "color": "#4daa8d", "alliance": "AIADMK+", "leader": "Edappadi K. Palaniswami", "leaderImg": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Edappadi_K._Palaniswami.png/220px-Edappadi_K._Palaniswami.png" },
+    "PMK": { "name": "PMK", "fullName": "Pattali Makkal Katchi", "color": "#b8a44c", "alliance": "AIADMK+", "leader": "S. Ramadoss", "leaderImg": "" },
+    "DMDK": { "name": "DMDK", "fullName": "Desiya Murpokku Dravida Kazhagam", "color": "#c48a3e", "alliance": "AIADMK+", "leader": "Premalatha Vijayakanth", "leaderImg": "" },
+    "BJP": { "name": "BJP", "fullName": "Bharatiya Janata Party", "color": "#d4874d", "alliance": "AIADMK+", "leader": "K. Annamalai", "leaderImg": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/K._Annamalai.jpg/220px-K._Annamalai.jpg" },
+    "NTK": { "name": "NTK", "fullName": "Naam Tamilar Katchi", "color": "#8b5e6b", "alliance": "NTK", "leader": "Seeman", "leaderImg": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Seeman_at_press_conference.jpg/220px-Seeman_at_press_conference.jpg" },
+    "TVK": { "name": "TVK", "fullName": "Tamilaga Vettri Kazhagam", "color": "#c9a84c", "alliance": "TVK+", "leader": "Vijay", "leaderImg": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Vijay_at_Leo_Audio_Launch_%28cropped%29.jpg/220px-Vijay_at_Leo_Audio_Launch_%28cropped%29.jpg" },
+    "AMMK": { "name": "AMMK", "fullName": "Amma Makkal Munnetra Kazhagam", "color": "#5a8a6e", "alliance": "Others", "leader": "T.T.V. Dhinakaran", "leaderImg": "" },
+    "IND": { "name": "IND", "fullName": "Independent", "color": "#6b7280", "alliance": "Others", "leader": "", "leaderImg": "" }
+  },
+  "alliances": {
+    "DMK+": { "name": "DMK+ Alliance", "shortName": "DMK+", "color": "#c4515f", "parties": ["DMK", "INC", "VCK", "CPI", "CPI(M)", "IUML", "MDMK"] },
+    "AIADMK+": { "name": "AIADMK-NDA", "shortName": "AIADMK+", "color": "#4daa8d", "parties": ["AIADMK", "BJP", "PMK", "DMDK"] },
+    "TVK+": { "name": "TVK Alliance", "shortName": "TVK+", "color": "#c9a84c", "parties": ["TVK"] },
+    "NTK": { "name": "NTK", "shortName": "NTK", "color": "#8b5e6b", "parties": ["NTK"] },
+    "Others": { "name": "Others", "shortName": "OTH", "color": "#6b7280", "parties": ["AMMK", "IND"] }
+  },
+  "allianceOrder": ["DMK+", "AIADMK+", "TVK+", "NTK", "Others"]
+}

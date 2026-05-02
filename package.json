@@ -1,0 +1,21 @@
+{
+  "name": "tn-elections-2026",
+  "version": "1.0.0",
+  "description": "Tamil Nadu Assembly Election Results 2026 - Live Dashboard",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "tailwindcss": "^3.4.0",
+    "postcss": "^8.4.0",
+    "autoprefixer": "^10.4.0"
+  },
+  "type": "module"
+}

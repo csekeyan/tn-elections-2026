@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TN Election Results 2026 - LIVE</title>
+  <meta name="description" content="Live Tamil Nadu Assembly Election Results 2026. Real-time counting updates for all 234 constituencies.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Tamil Nadu Election Results 2026 - LIVE">
+  <meta property="og:description" content="Real-time results for all 234 constituencies. Interactive map, charts, and drill-down.">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts: DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="refresh-bar" id="refreshBar"></div>
+    <div style="max-width: 1600px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <h1 style="font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em;">
+          <span style="opacity:0.45">TN</span> Election Results
+          <span style="color: var(--accent);">2026</span>
+        </h1>
+        <span class="live-badge">
+          <span class="live-dot"></span>
+          LIVE
+        </span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span class="countdown" id="countdown">Refreshing in 30s</span>
+        <span style="color: var(--text-muted); font-size: 0.72rem;" id="lastUpdated">--</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page: Sidebar Left + Main + Sidebar Right -->
+  <div class="page-wrapper">
+
+    <!-- Left Sidebar: DMK+ Alliance Leaders -->
+    <aside class="sidebar sidebar-left" id="sidebarLeft">
+      <!-- Filled by JS -->
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: 20px; padding-bottom: 40px;">
+
+      <!-- Top Stats Row -->
+      <div id="statsRow" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px;">
+      </div>
+
+      <!-- Alliance Seat Bar -->
+      <div class="alliance-bar-container" id="allianceSection">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <h2 style="font-size: 0.9rem; font-weight: 600;">Seats Won + Leading</h2>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Majority: 118</div>
+        </div>
+        <div style="position: relative;">
+          <div class="alliance-bar" id="allianceBar"></div>
+          <div class="majority-line" id="majorityLine" style="display:none;">
+            <div class="majority-label">118</div>
+          </div>
+        </div>
+        <div class="alliance-legend" id="allianceLegend"></div>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display: flex; border-bottom: 1px solid var(--border); margin: 20px 0 14px 0;">
+        <button class="tab-btn active" data-tab="map">Map</button>
+        <button class="tab-btn" data-tab="table">Constituencies</button>
+        <button class="tab-btn" data-tab="charts">Charts</button>
+      </div>
+
+      <!-- Tab: Map -->
+      <div id="tab-map" class="tab-content">
+        <div id="map"></div>
+      </div>
+
+      <!-- Tab: Table -->
+      <div id="tab-table" class="tab-content" style="display: none;">
+        <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;">
+          <div class="search-container" style="flex: 1; min-width: 200px;">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search constituency or candidate...">
+          </div>
+          <select class="district-select" id="districtFilter">
+            <option value="">All Districts</option>
+          </select>
+          <select class="district-select" id="partyFilter">
+            <option value="">All Parties</option>
+          </select>
+          <select class="district-select" id="statusFilter">
+            <option value="">All Status</option>
+            <option value="declared">Declared</option>
+            <option value="counting">Counting</option>
+          </select>
+        </div>
+        <div style="overflow-x: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th data-sort="id">#</th>
+                <th data-sort="name">Constituency</th>
+                <th data-sort="district">District</th>
+                <th data-sort="leading">Leading</th>
+                <th data-sort="party">Party</th>
+                <th data-sort="margin">Margin</th>
+                <th data-sort="status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+        <div style="padding: 10px 14px; color: var(--text-muted); font-size: 0.75rem;" id="tableCount"></div>
+      </div>
+
+      <!-- Tab: Charts -->
+      <div id="tab-charts" class="tab-content" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px;">
+          <div class="alliance-bar-container">
+            <h3 style="font-size: 0.88rem; font-weight: 600; margin-bottom: 10px;">Party-wise Seats</h3>
+            <div class="chart-container">
+              <canvas id="partyChart"></canvas>
+            </div>
+          </div>
+          <div class="alliance-bar-container">
+            <h3 style="font-size: 0.88rem; font-weight: 600; margin-bottom: 10px;">Vote Share by Alliance</h3>
+            <div class="chart-container">
+              <canvas id="voteShareChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Right Sidebar: AIADMK+/TVK Leaders -->
+    <aside class="sidebar sidebar-right" id="sidebarRight">
+      <!-- Filled by JS -->
+    </aside>
+
+  </div>
+
+  <!-- Constituency Detail Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+
+  <footer style="max-width: 1200px; margin: 0 auto; padding: 20px; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.7rem;">
+    Data source: Election Commission of India &middot; Auto-refreshes every 30 seconds<br>
+    Built for the people of Tamil Nadu
+  </footer>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
