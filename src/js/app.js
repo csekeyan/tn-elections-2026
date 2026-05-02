@@ -95,6 +95,11 @@ function renderSidebars(data) {
     LEADERS.filter(l => l.side === 'left').map(l => buildLeaderCard(l, data, config, allianceTotals)).join('');
   document.getElementById('sidebarRight').innerHTML =
     LEADERS.filter(l => l.side === 'right').map(l => buildLeaderCard(l, data, config, allianceTotals)).join('');
+  // Mobile leaders tab: all leaders in one grid
+  const mobileEl = document.getElementById('mobileLeaders');
+  if (mobileEl) {
+    mobileEl.innerHTML = LEADERS.map(l => buildLeaderCard(l, data, config, allianceTotals)).join('');
+  }
 }
 
 function getSeatResult(acNo, partyName, data, config) {

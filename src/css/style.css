@@ -510,9 +510,30 @@ body {
   .leader-card { width: 164px; }
   .leader-photo-hero { height: 155px; }
 }
+/* Leaders tab: hidden on desktop (sidebars visible), shown on mobile */
+.tab-leaders-only { display: none; }
+
+.mobile-leaders-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.mobile-leaders-grid .leader-card {
+  width: 100%;
+  position: relative;
+}
+.mobile-leaders-grid .leader-photo-hero {
+  height: 180px;
+}
+
 @media (max-width: 1100px) {
   .sidebar { display: none; }
   .page-wrapper { display: block; }
+  .tab-leaders-only { display: inline-block; }
+}
+@media (max-width: 480px) {
+  .mobile-leaders-grid { grid-template-columns: 1fr; }
+  .mobile-leaders-grid .leader-photo-hero { height: 200px; }
 }
 @media (max-width: 768px) {
   .stat-number { font-size: 1.5rem; }

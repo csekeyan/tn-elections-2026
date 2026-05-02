@@ -127,3 +127,15 @@ git remote set-url origin https://github.com/csekeyan/tn-elections-2026.git
 
 ### NOT yet pushed to GitHub/Cloudflare
 All changes are local only. Need to push to deploy.
+
+### Worker + Data Pipeline
+- Rewrote `worker/index.js`: clean /api/results with 30s edge cache, /api/health endpoint
+  - `LIVE_MODE = false` serves mock_results.json from GitHub Pages
+  - `LIVE_MODE = true` fetches from ECI (update `fetchLiveResults()` on May 4)
+- Rewrote `src/js/data.js`: uses Worker API in production, local mock in dev, fallback to local mock if worker down
+- Worker deploy failed (Cloudflare OAuth didn't complete). Need `cd worker && npx wrangler deploy` tomorrow.
+
+### Git Push
+- All changes pushed to GitHub main (1a96c55)
+- GitHub Pages will auto-deploy
+- Worker NOT yet deployed (needs wrangler auth)

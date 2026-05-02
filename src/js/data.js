@@ -1,12 +1,12 @@
 // Data service: fetches results from Worker API, polls every 30s
 
-const WORKER_API = 'https://tn-elections-2026.56karthicute.workers.dev/api/results';
+const API_URL = '/api/results';
 const LOCAL_MOCK = './mock_results.json';
 const POLL_INTERVAL = 30000;
 
-// Use Worker API in production, local mock in dev
+// Dev: local mock (no Pages Functions). Prod: /api/results (same origin).
 const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-const DATA_URL = IS_DEV ? LOCAL_MOCK : WORKER_API;
+const DATA_URL = IS_DEV ? LOCAL_MOCK : API_URL;
 
 let currentData = null;
 let listeners = [];
