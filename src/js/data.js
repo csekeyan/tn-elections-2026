@@ -1,10 +1,9 @@
-// Data service: fetches results from Worker API, polls every 30s
+// Data service: fetches results, adaptive polling based on server hint
 
 const API_URL = '/api/results';
 const LOCAL_MOCK = './mock_results.json';
-const POLL_INTERVAL = 30000;
+const DEFAULT_INTERVAL = 30000;
 
-// Dev: local mock (no Pages Functions). Prod: /api/results (same origin).
 const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 const DATA_URL = IS_DEV ? LOCAL_MOCK : API_URL;
 
@@ -12,6 +11,7 @@ let currentData = null;
 let listeners = [];
 let pollTimer = null;
 let countdownTimer = null;
+let pollInterval = DEFAULT_INTERVAL;
 let secondsLeft = 30;
 
 let partyConfig = null;
@@ -48,10 +48,21 @@ async function fetchResults() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    // Guard: if worker returns an error object, don't update
     if (data.error && !data.constituencies) {
-      console.warn('API returned error:', data.error);
+      console.warn('API error:', data.error);
       return null;
+    }
+
+    // Adaptive polling: server tells us how often to poll
+    const hint = parseInt(res.headers.get('X-Poll-Interval'));
+    if (hint && hint !== pollInterval / 1000) {
+      const newInterval = hint * 1000;
+      if (newInterval !== pollInterval) {
+        pollInterval = newInterval;
+        secondsLeft = hint;
+        clearInterval(pollTimer);
+        pollTimer = setInterval(fetchResults, pollInterval);
+      }
     }
 
     currentData = data;
@@ -59,9 +70,7 @@ async function fetchResults() {
     return data;
   } catch (err) {
     console.error('Fetch failed:', err);
-    // If worker is down, fall back to local mock
     if (!IS_DEV && !currentData) {
-      console.warn('Worker unavailable, falling back to local mock');
       try {
         const fallback = await fetch(LOCAL_MOCK + '?t=' + Date.now());
         const data = await fallback.json();
@@ -76,18 +85,18 @@ async function fetchResults() {
 
 export async function startPolling() {
   await fetchResults();
-  pollTimer = setInterval(fetchResults, POLL_INTERVAL);
+  pollTimer = setInterval(fetchResults, pollInterval);
 
-  secondsLeft = 30;
+  secondsLeft = pollInterval / 1000;
   const countdownEl = document.getElementById('countdown');
   const refreshBar = document.getElementById('refreshBar');
 
   if (countdownTimer) clearInterval(countdownTimer);
   countdownTimer = setInterval(() => {
     secondsLeft--;
-    if (secondsLeft <= 0) secondsLeft = 30;
+    if (secondsLeft <= 0) secondsLeft = pollInterval / 1000;
     if (countdownEl) countdownEl.textContent = `Refreshing in ${secondsLeft}s`;
-    if (refreshBar) refreshBar.style.transform = `scaleX(${secondsLeft / 30})`;
+    if (refreshBar) refreshBar.style.transform = `scaleX(${secondsLeft / (pollInterval / 1000)})`;
   }, 1000);
 }
 

@@ -1,44 +1,41 @@
 // /api/results - Election results with KV cache + thundering herd protection
-// Free tier safe: ~30 reads/day (edge-cached), ~720 writes/day (1 per cycle)
+// 30s TTL, paid plan
 
 const CACHE_TTL = 30; // seconds
 const KV_KEY = 'api:results';
 const LOCK_KEY = 'api:lock';
-const LOCK_TTL = 15; // seconds - prevents parallel fetches
+const LOCK_TTL = 15;
 
-// ── May 4: set true, update UPSTREAM_URL ──
 const LIVE_MODE = true;
 const UPSTREAM_URL = 'https://tn-eci-mock.csekeyan.workers.dev/data';
 
 export async function onRequestGet(context) {
   const { env } = context;
-  if (!env.CACHE) {
-    return Response.json({ error: 'KV not bound' }, { status: 500 });
-  }
+  if (!env.CACHE) return Response.json({ error: 'KV not bound' }, { status: 500 });
 
-  // Step 1: Check KV cache (edge-cached for CACHE_TTL seconds, free)
+  // Check KV cache (edge-cached, free within cacheTtl window)
   const cached = await env.CACHE.get(KV_KEY, { type: 'json', cacheTtl: CACHE_TTL });
   if (cached && cached._cachedAt) {
     const age = Math.floor((Date.now() - cached._cachedAt) / 1000);
     if (age < CACHE_TTL) {
-      return respond(cached, 'HIT', { 'X-Cache-Age': age + 's' });
+      return respond(cached, 'HIT', {
+        'X-Cache-Age': age + 's',
+        'Cache-Control': `public, max-age=${Math.max(1, CACHE_TTL - age)}`,
+      });
     }
-    // Data is stale. But DON'T fetch yet — check if someone else is already fetching.
   }
 
-  // Step 2: Thundering herd protection — only one request fetches at a time
+  // Thundering herd: only one request fetches at a time
   const lock = await env.CACHE.get(LOCK_KEY, { cacheTtl: LOCK_TTL });
   if (lock) {
-    // Another request is already fetching. Return stale data if we have it.
-    if (cached) return respond(cached, 'STALE-WAIT', { 'X-Lock': 'true' });
-    // No stale data and locked — wait briefly and retry once
+    if (cached) return respond(cached, 'STALE-WAIT', { 'Cache-Control': 'public, max-age=5' });
     await new Promise(r => setTimeout(r, 2000));
     const retry = await env.CACHE.get(KV_KEY, { type: 'json', cacheTtl: CACHE_TTL });
     if (retry) return respond(retry, 'RETRY-HIT');
-    return Response.json({ error: 'Data not available yet' }, { status: 503 });
+    return Response.json({ error: 'Loading...' }, { status: 503 });
   }
 
-  // Step 3: We're the chosen one. Set lock, fetch, cache, release.
+  // Acquire lock, fetch, cache
   await env.CACHE.put(LOCK_KEY, Date.now().toString(), { expirationTtl: LOCK_TTL });
 
   let data;
@@ -53,7 +50,6 @@ export async function onRequestGet(context) {
     if (!res.ok) throw new Error(`Upstream ${res.status}`);
     data = await res.json();
   } catch (err) {
-    // Release lock on failure
     context.waitUntil(env.CACHE.delete(LOCK_KEY));
     if (cached) return respond(cached, 'STALE-ERROR', { 'X-Error': err.message });
     return Response.json({ error: err.message }, { status: 502 });
@@ -65,21 +61,28 @@ export async function onRequestGet(context) {
   data._fetchDuration = fetchDuration + 'ms';
   data._cachedAt = Date.now();
 
-  // Store in KV and release lock (async, don't block response)
   context.waitUntil(Promise.all([
     env.CACHE.put(KV_KEY, JSON.stringify(data), { expirationTtl: CACHE_TTL * 3 }),
     env.CACHE.delete(LOCK_KEY),
   ]));
 
-  return respond(data, 'MISS', { 'X-Fetch-Duration': fetchDuration + 'ms' });
+  return respond(data, 'MISS', {
+    'X-Fetch-Duration': fetchDuration + 'ms',
+    'Cache-Control': `public, max-age=${CACHE_TTL}`,
+  });
 }
 
 function respond(data, cacheStatus, extraHeaders = {}) {
+  // Adaptive polling hint: if all results declared, tell browser to slow down
+  const allDeclared = data.countingStatus === 'completed' || (data.summary && data.summary.counting === 0);
+  const pollHint = allDeclared ? 300 : 30;
+
   return new Response(JSON.stringify(data), {
     headers: {
       'Content-Type': 'application/json',
       'X-Cache': cacheStatus,
       'X-Source': data._source || 'unknown',
+      'X-Poll-Interval': String(pollHint),
       ...extraHeaders,
     },
   });
