@@ -1,7 +1,7 @@
 // /api/results - Election results with KV cache + thundering herd protection
 // Free tier safe: ~30 reads/day (edge-cached), ~720 writes/day (1 per cycle)
 
-const CACHE_TTL = 120; // seconds
+const CACHE_TTL = 30; // seconds
 const KV_KEY = 'api:results';
 const LOCK_KEY = 'api:lock';
 const LOCK_TTL = 15; // seconds - prevents parallel fetches
