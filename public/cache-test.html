@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cache Test - TN Elections API</title>
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', system-ui, sans-serif; background: #0f1117; color: #e2e8f0; padding: 20px; max-width: 700px; margin: 0 auto; }
+  h1 { font-size: 1.2rem; margin-bottom: 6px; }
+  .sub { color: #718096; font-size: 0.8rem; margin-bottom: 16px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat { background: #171923; border: 1px solid #2d3748; border-radius: 8px; padding: 12px; text-align: center; }
+  .stat-val { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 0.7rem; color: #718096; margin-top: 2px; }
+  .hit { color: #48bb78; }
+  .miss { color: #fc8181; }
+  .log { background: #171923; border: 1px solid #2d3748; border-radius: 8px; padding: 12px; max-height: 400px; overflow-y: auto; font-size: 0.78rem; font-family: monospace; }
+  .log-entry { padding: 4px 0; border-bottom: 1px solid #2d3748; display: flex; gap: 8px; }
+  .log-entry:last-child { border: none; }
+  .tag { padding: 1px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; }
+  .tag-hit { background: #22543d; color: #48bb78; }
+  .tag-miss { background: #742a2a; color: #fc8181; }
+  button { background: #6c9cff; color: #0f1117; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; margin-bottom: 16px; }
+  button:hover { opacity: 0.9; }
+  .eci-box { background: #1a1f2e; border: 1px solid #2d3748; border-radius: 8px; padding: 12px; margin-bottom: 16px; }
+  .eci-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: #ecc94b; }
+  #eciData { font-family: monospace; font-size: 0.78rem; color: #a0aec0; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<h1>Cache Test Dashboard</h1>
+<div class="sub">Open this page in multiple browsers/tabs. Watch the ECI hit count stay at 1 for 30 seconds.</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-val" id="totalRequests">0</div>
+    <div class="stat-label">Requests Made</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val hit" id="cacheHits">0</div>
+    <div class="stat-label">Cache HITs</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val miss" id="cacheMisses">0</div>
+    <div class="stat-label">Cache MISSes</div>
+  </div>
+</div>
+
+<div class="eci-box">
+  <div class="eci-title">Upstream (Mock ECI) Hit Count</div>
+  <div id="eciData">Loading...</div>
+</div>
+
+<button onclick="fireRequests(10)">Fire 10 Requests</button>
+<button onclick="fireRequests(50)">Fire 50 Requests</button>
+<button onclick="resetECI()">Reset ECI Counter</button>
+<button onclick="checkECI()">Check ECI Hits</button>
+
+<div class="log" id="log"></div>
+
+<script>
+let total = 0, hits = 0, misses = 0;
+const log = document.getElementById('log');
+
+async function makeRequest() {
+  total++;
+  const start = performance.now();
+  try {
+    const res = await fetch('/api/results');
+    const dur = Math.round(performance.now() - start);
+    const cache = res.headers.get('X-Cache') || '?';
+    const source = res.headers.get('X-Source') || '?';
+    const fetchTime = res.headers.get('X-Fetch-Time') || '';
+    const data = await res.json();
+    
+    const isHit = cache === 'HIT';
+    if (isHit) hits++; else misses++;
+    
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `
+      <span class="tag ${isHit ? 'tag-hit' : 'tag-miss'}">${cache}</span>
+      <span>${dur}ms</span>
+      <span style="color:#718096">ECI hit #${data._eciHitNumber || '?'}</span>
+      <span style="color:#718096">${fetchTime.slice(11,23)}</span>
+    `;
+    log.prepend(entry);
+  } catch (err) {
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `<span style="color:#fc8181">ERROR: ${err.message}</span>`;
+    log.prepend(entry);
+  }
+  
+  document.getElementById('totalRequests').textContent = total;
+  document.getElementById('cacheHits').textContent = hits;
+  document.getElementById('cacheMisses').textContent = misses;
+}
+
+async function fireRequests(n) {
+  const promises = [];
+  for (let i = 0; i < n; i++) promises.push(makeRequest());
+  await Promise.all(promises);
+  checkECI();
+}
+
+async function checkECI() {
+  try {
+    const res = await fetch('https://tn-eci-mock.csekeyan.workers.dev/count');
+    const data = await res.json();
+    document.getElementById('eciData').innerHTML = 
+      `Total hits: <strong style="color:#fc8181;font-size:1.1rem">${data.totalHits}</strong> | ` +
+      `Last: ${(data.lastHitTime||'').slice(11,23)}<br>` +
+      `Recent: ${data.log.map(l => l.time.slice(11,23)).join(', ')}`;
+  } catch (err) {
+    document.getElementById('eciData').textContent = 'Error: ' + err.message;
+  }
+}
+
+async function resetECI() {
+  await fetch('https://tn-eci-mock.csekeyan.workers.dev/reset');
+  checkECI();
+}
+
+// Auto-poll every 5 seconds
+setInterval(() => { makeRequest(); checkECI(); }, 5000);
+// Initial
+makeRequest();
+setTimeout(checkECI, 1000);
+</script>
+</body>
+</html>

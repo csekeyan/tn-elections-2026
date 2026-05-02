@@ -8,5 +8,11 @@
   },
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "f55206ca16c04fe684ec5a81347edc23"
+    }
   ]
 }

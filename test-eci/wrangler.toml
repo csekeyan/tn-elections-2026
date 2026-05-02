@@ -1,0 +1,7 @@
+name = "tn-eci-mock"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "HITS"
+id = "f55206ca16c04fe684ec5a81347edc23"
