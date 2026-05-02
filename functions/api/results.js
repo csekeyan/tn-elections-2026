@@ -1,5 +1,5 @@
 // /api/results - Election results with 30s edge cache
-// May 4: update fetchLiveResults(), set LIVE_MODE = true, push
+// May 4: update fetchLiveResults(), set LIVE_MODE = true, push + deploy
 
 const CACHE_TTL = 30;
 
@@ -16,7 +16,7 @@ export async function onRequestGet(context) {
   const cache = caches.default;
   const cacheKey = new Request(new URL(request.url).origin + '/api/results', { method: 'GET' });
 
-  // Check edge cache
+  // Edge cache check
   const cached = await cache.match(cacheKey);
   if (cached) {
     const resp = new Response(cached.body, cached);
@@ -25,14 +25,16 @@ export async function onRequestGet(context) {
   }
 
   // Cache miss: fetch data
-  let data;
-  let source;
+  let data, source;
   try {
     if (LIVE_MODE) {
       data = await fetchLiveResults();
       source = 'eci';
     } else {
-      data = await fetchMockResults(context);
+      const origin = new URL(request.url).origin;
+      const res = await fetch(origin + '/mock_results.json');
+      if (!res.ok) throw new Error(`Mock fetch: ${res.status}`);
+      data = await res.json();
       source = 'mock';
     }
   } catch (err) {
@@ -54,20 +56,11 @@ export async function onRequestGet(context) {
     },
   });
 
-  // Store in edge cache
   context.waitUntil(cache.put(cacheKey, response.clone()));
   return response;
 }
 
-// Mock: fetch from same origin static file
-async function fetchMockResults(context) {
-  const origin = new URL(context.request.url).origin;
-  const res = await fetch(origin + '/mock_results.json');
-  if (!res.ok) throw new Error(`Mock fetch failed: ${res.status}`);
-  return res.json();
-}
-
-// ── THIS IS THE ONLY FUNCTION TO UPDATE ON MAY 4 ──
+// ── THE ONLY FUNCTION TO CHANGE ON MAY 4 ──
 async function fetchLiveResults() {
   const res = await fetch(ECI_BASE + ECI_PATH, {
     headers: {
@@ -78,12 +71,10 @@ async function fetchLiveResults() {
   });
   if (!res.ok) throw new Error(`ECI returned ${res.status}`);
   const html = await res.text();
-  return parseECIResponse(html);
-}
 
-function parseECIResponse(html) {
+  // Parse ECI response - update based on actual format on May 4
   try { return JSON.parse(html); } catch {}
   const m = html.match(/var\s+data\s*=\s*(\{[\s\S]*?\});/);
   if (m) try { return JSON.parse(m[1]); } catch {}
-  throw new Error('ECI parsing not implemented yet. Update on May 4.');
+  throw new Error('ECI parsing not yet implemented. Update on May 4.');
 }

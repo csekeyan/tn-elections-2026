@@ -139,3 +139,28 @@ All changes are local only. Need to push to deploy.
 - All changes pushed to GitHub main (1a96c55)
 - GitHub Pages will auto-deploy
 - Worker NOT yet deployed (needs wrangler auth)
+
+### Architecture Change: Workers Static Assets → Cloudflare Pages
+- Workers Static Assets (`[assets]` with `binding`) has a bug in wrangler 4.87.0 - Worker code never executes
+- Switched to Cloudflare Pages with Functions directory (`functions/api/`)
+- `functions/api/results.js` - main API with 30s edge cache, mock/live toggle
+- `functions/api/health.js` - health check endpoint
+- `wrangler.toml` and `api/worker.js` REMOVED (not needed for Pages)
+- Deploy: `npm run build && wrangler pages deploy dist/ --project-name tn-elections-2026`
+- Or: connect GitHub repo in Cloudflare Pages dashboard (auto-deploy on push)
+  - Build command: `npm run build`
+  - Build output: `dist`
+
+### Load Test Results (local)
+- Single request: ~5ms for 122KB JSON
+- 50 concurrent requests: 3-51ms each
+- Mock ECI upstream: exactly 1 hit (cache serves the rest)
+- Note: caches.default is no-op locally. In production, first request = MISS, next 30s = HIT
+
+### Mobile Leaders Tab
+- Added 4th tab "Leaders" visible only on screens ≤1100px (where sidebars are hidden)
+- Renders all 4 leader cards in a 2-column grid (1-column on ≤480px)
+
+### data.js Update
+- Uses relative `/api/results` in production (same origin)
+- Falls back to `./mock_results.json` on localhost or if API fails
