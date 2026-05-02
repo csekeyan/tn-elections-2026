@@ -44,7 +44,7 @@ const LEADERS = [
     party: 'NTK', alliance: 'NTK',
     constituency: 'Karaikudi', acNo: 184,
     img: BASE + 'images/leaders/seeman.jpg',
-    partyImg: BASE + 'images/parties/ntk.svg',
+    partyImg: BASE + 'images/parties/ntk.png',
     role: 'NTK Chief Coordinator',
     side: 'right',
   },
@@ -69,11 +69,14 @@ async function init() {
   onUpdate((data) => {
     renderStats(data);
     renderAllianceBar(data);
+    renderMajorityWatch(data);
+    renderKeyRaces(data);
     renderTable(data);
     renderSidebars(data);
     updateMap();
     updateCharts(data);
     updateLastUpdated(data);
+    requestAnimationFrame(animateStatCards);
   });
 
   await initMap();
@@ -335,3 +338,125 @@ function updateLastUpdated(data) {
 }
 
 init().then(() => { window.__openConstituency = openConstituency; }).catch(console.error);
+
+// --- Majority Watch ---
+function renderMajorityWatch(data) {
+  const el = document.getElementById('majorityWatch');
+  if (!data.allianceSummary || data.allianceSummary.length === 0) { el.innerHTML = ''; return; }
+
+  const majority = Math.ceil(data.totalSeats / 2) + 1; // 118
+  const sorted = [...data.allianceSummary].sort((a, b) => b.total - a.total);
+  const leader = sorted[0];
+  const color = getAllianceColor(leader.name);
+  const distance = majority - leader.total;
+  const pct = Math.min(100, (leader.total / majority) * 100).toFixed(1);
+
+  el.innerHTML = `
+    <div class="mw-leading">
+      <div class="mw-alliance-dot" style="background:${color}"></div>
+      <div>
+        <div class="mw-alliance-name">${leader.name}</div>
+        <div class="mw-seats">Won ${leader.won} + Leading ${leader.leading} = ${leader.total} seats</div>
+      </div>
+    </div>
+    <div class="mw-distance">
+      ${distance > 0
+        ? `<div class="mw-number" style="color:${color}" data-target="${distance}">${distance}</div>
+           <div class="mw-label">seats to majority (${majority})</div>`
+        : `<div class="mw-reached">Majority reached!</div>
+           <div class="mw-label">${leader.total} of ${data.totalSeats} (${majority} needed)</div>`
+      }
+    </div>
+    <div class="mw-progress" style="width:100%">
+      <div class="mw-progress-fill" style="width:${pct}%;background:${color}"></div>
+    </div>
+  `;
+}
+
+// --- Key Races to Watch ---
+function renderKeyRaces(data) {
+  const el = document.getElementById('keyRaces');
+  if (!data.constituencies) { el.innerHTML = ''; return; }
+
+  // Close races: margin < 2000, sorted by margin ascending
+  const close = data.constituencies
+    .filter(c => c.margin > 0 && c.margin < 2000 && c.candidates.length >= 2)
+    .sort((a, b) => a.margin - b.margin)
+    .slice(0, 10);
+
+  if (close.length === 0) { el.innerHTML = ''; return; }
+
+  el.innerHTML = `
+    <div class="key-races-header">
+      <div class="key-races-title">Key Races to Watch</div>
+      <div class="key-races-count">${close.length} close contest${close.length > 1 ? 's' : ''} (margin &lt; 2,000)</div>
+    </div>
+    <div class="key-races-scroll">
+      ${close.map(c => {
+        const c1 = c.candidates[0];
+        const c2 = c.candidates[1];
+        const col1 = getPartyColor(c1.party);
+        const col2 = getPartyColor(c2.party);
+        return `
+          <div class="key-race-card" onclick="window.__openConstituency && window.__openConstituency(${c.id})">
+            <div class="kr-constituency">${c.name}</div>
+            <div class="kr-district">${c.district} &middot; #${c.id}</div>
+            <div class="kr-candidate">
+              <div style="display:flex;align-items:center;gap:4px">
+                <span class="party-badge" style="background:${col1};font-size:0.55rem;padding:1px 5px">${c1.party}</span>
+                <span class="kr-candidate-name">${c1.name}</span>
+              </div>
+              <span style="font-weight:600;font-variant-numeric:tabular-nums">${c1.votes.toLocaleString()}</span>
+            </div>
+            <div class="kr-candidate" style="opacity:0.65">
+              <div style="display:flex;align-items:center;gap:4px">
+                <span class="party-badge" style="background:${col2};font-size:0.55rem;padding:1px 5px">${c2.party}</span>
+                <span class="kr-candidate-name">${c2.name}</span>
+              </div>
+              <span style="font-variant-numeric:tabular-nums">${c2.votes.toLocaleString()}</span>
+            </div>
+            <div class="kr-margin">
+              <span class="kr-margin-label">Margin</span>
+              <span class="kr-margin-value">${c.margin.toLocaleString()}</span>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+// --- Number count-up animation ---
+function animateNumber(el, target, duration = 600) {
+  const start = parseInt(el.textContent) || 0;
+  if (start === target) return;
+  const startTime = performance.now();
+  el.classList.add('animating');
+
+  function tick(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease-out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(start + (target - start) * eased);
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      el.textContent = target;
+      el.classList.remove('animating');
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+function animateStatCards() {
+  document.querySelectorAll('.stat-number').forEach(el => {
+    const target = parseInt(el.textContent);
+    if (!isNaN(target)) animateNumber(el, target);
+  });
+  // Also animate majority watch number
+  const mwNum = document.querySelector('.mw-number[data-target]');
+  if (mwNum) {
+    const target = parseInt(mwNum.dataset.target);
+    if (!isNaN(target)) animateNumber(mwNum, target);
+  }
+}

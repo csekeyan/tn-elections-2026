@@ -91,7 +91,7 @@ function onEachFeature(feature, layer) {
       }
       layer.bindTooltip(tooltipHtml, {
         sticky: true,
-        direction: 'top',
+        direction: 'auto',
         offset: [0, -10],
       }).openTooltip();
     },

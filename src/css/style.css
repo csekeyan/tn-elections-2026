@@ -527,3 +527,176 @@ body {
   #map { height: 320px; }
 }
 /* rebuilt 20260502071424 */
+
+/* --- Majority Watch --- */
+.majority-watch {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.mw-leading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mw-alliance-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.mw-alliance-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.mw-seats {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+.mw-distance {
+  text-align: right;
+}
+.mw-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.mw-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.mw-reached {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--green);
+}
+.mw-progress {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-hover);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.mw-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+
+/* --- Key Races --- */
+.key-races-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.key-races-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.key-races-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.key-races-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-top: 4px;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.key-races-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.key-races-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+.key-race-card {
+  flex: 0 0 220px;
+  scroll-snap-align: start;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.key-race-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.kr-constituency {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kr-district {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.kr-candidate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  margin-bottom: 3px;
+}
+.kr-candidate-name {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kr-margin {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.kr-margin-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.kr-margin-value {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--red);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Count-up animation --- */
+@keyframes countPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.stat-number.animating {
+  animation: countPulse 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .majority-watch { padding: 12px 14px; }
+  .mw-number { font-size: 1.5rem; }
+  .key-race-card { flex: 0 0 180px; padding: 10px 12px; }
+}

@@ -88,3 +88,42 @@ git remote set-url origin https://csekeyan:${TOKEN}@github.com/csekeyan/tn-elect
 git push
 git remote set-url origin https://github.com/csekeyan/tn-elections-2026.git
 ```
+
+## Session: May 2, 2026 ~1:00 AM (Late Night)
+
+### Changes Made
+1. **Majority Watch widget** - Added between alliance bar and tabs
+   - Shows leading alliance name, Won+Leading breakdown, distance to 118 majority
+   - Progress bar fills toward majority threshold
+   - Auto-updates every refresh cycle
+
+2. **Key Races to Watch** - Horizontal scrollable card strip
+   - Filters constituencies with margin < 2,000
+   - Shows top 10 closest contests, sorted by margin ascending
+   - Each card: constituency name, district, top 2 candidates with party badges, margin
+   - Click opens constituency detail modal
+   - Mock data only has 2 close races; real data will have many more
+
+3. **Number count-up animations** on stat cards
+   - Ease-out cubic animation, 600ms duration
+   - Subtle scale pulse during animation
+   - Also animates the Majority Watch distance number
+
+4. **Key Races border fix** - Added padding-top:4px to scroll container so hover translateY(-2px) doesn't clip top border
+
+5. **Map tooltip fix** - Changed Leaflet tooltip direction from 'top' to 'auto' so tooltips auto-flip below cursor for northern constituencies near map edge
+
+6. **Vijay photo replaced** - User provided high-quality TVK political poster image (692x1000 PNG)
+
+7. **NTK logo replaced** - User provided green circular logo with farmer/plough symbol, saved as ntk.png, updated app.js reference from .svg to .png
+
+### Files Modified
+- `src/js/app.js` - Added renderMajorityWatch(), renderKeyRaces(), animateNumber(), animateStatCards(); wired into onUpdate; updated NTK logo path
+- `src/css/style.css` - Added .majority-watch, .key-race-card, .key-races-scroll, animation keyframes, responsive rules
+- `src/js/map.js` - Changed tooltip direction to 'auto'
+- `src/index.html` - Added #majorityWatch and #keyRaces placeholder divs (done in prior session)
+- `public/images/leaders/vijay.jpg` - Replaced with TVK poster image
+- `public/images/parties/ntk.png` - New NTK logo from user
+
+### NOT yet pushed to GitHub/Cloudflare
+All changes are local only. Need to push to deploy.
