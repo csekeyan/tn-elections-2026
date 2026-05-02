@@ -6,12 +6,22 @@
 ---
 
 ## Current Status: PHASE 1 COMPLETE + v2 Polish Applied
-## Last Completed Step: Production build + git repo + Worker script ready
+## Last Completed Step: SITE LIVE at csekeyan.github.io/tn-elections-2026
 ## Next Step: Phase 2 - Performance polish, mobile testing, then Phase 3 deployment
 
 ---
 
 ## Log Entries
+
+### 2026-05-02 00:00 PDT - SITE IS LIVE
+- URL: https://csekeyan.github.io/tn-elections-2026/
+- Deployed via GitHub Pages + GitHub Actions
+- Auto-deploys on every push to main branch
+- All assets verified: HTML, CSS, JS, JSON, GeoJSON, images all returning 200
+- GitHub token stored in .github-token (gitignored)
+- Cloudflare Pages skipped (UI changed, merged with Workers, too complex for now)
+- GitHub Pages 100GB bandwidth limit is fine for launch
+
 
 ### 2026-05-01 23:36 PDT - Build + Git + Worker Ready for Deploy
 - Production build: 2.0MB total (7KB HTML, 15KB CSS, 21KB JS, 1.4MB GeoJSON, 332KB images)
