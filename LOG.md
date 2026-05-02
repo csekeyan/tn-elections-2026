@@ -5,91 +5,75 @@
 
 ---
 
-## Current Status: LIVE ON TWO PLATFORMS
-## Last Completed Step: Both deployments live + validated
-## Next Step: ECI live data integration (May 3-4)
+## Current Status: LIVE ON TWO PLATFORMS + RESEARCH DONE
+## Last Completed Step: Deep research + architecture planned + social posts drafted
+## Next Step: ECI endpoint discovery (May 3 evening) + Worker proxy activation
 
 ---
 
 ## LIVE URLs
 | Platform | URL | Short URL | Bandwidth |
 |----------|-----|-----------|-----------|
-| Cloudflare | https://tn-elections-2026.56karthicute.workers.dev/ | https://tinyurl.com/2c2w8a7c | Unlimited |
-| GitHub Pages | https://csekeyan.github.io/tn-elections-2026/ | https://tinyurl.com/28uccns2 | 100GB/month |
-
-**Share the Cloudflare TinyURL for viral traffic:** https://tinyurl.com/2c2w8a7c
+| Cloudflare | https://tn-elections-2026.56karthicute.workers.dev/ | TBD | Unlimited |
+| GitHub Pages | https://csekeyan.github.io/tn-elections-2026/ | TBD | 100GB/month |
 
 ## GitHub
 - Repo: https://github.com/csekeyan/tn-elections-2026
 - Token: stored in .github-token (gitignored)
-- Auto-deploys on push to main (both GitHub Pages via Actions + Cloudflare)
+- Auto-deploys on push to main (both platforms)
 
 ---
 
 ## Log Entries
 
-### 2026-05-02 00:20 PDT - Both Deployments Live + Validated
-- Cloudflare Workers: LIVE at tn-elections-2026.56karthicute.workers.dev
-  - All assets verified: HTML, CSS, JS, JSON, GeoJSON, images (all 200)
-  - Unlimited bandwidth, global CDN
-  - Auto-rebuilds on git push
-- GitHub Pages: LIVE at csekeyan.github.io/tn-elections-2026/
-  - Also all assets verified (200)
-  - 100GB/month bandwidth
-  - Auto-deploys via GitHub Actions
-- TinyURLs created for sharing
-- Base path fix: auto-detects GitHub Actions (subpath) vs Cloudflare (root)
-  - Uses GITHUB_ACTIONS env var in vite.config.js
-- Fixed Cloudflare issues:
-  - Vite upgraded to v6 (Wrangler requirement)
-  - Added plugins:[] to vite config
-  - Created wrangler.jsonc with assets.directory
-- Fixed image paths: use import.meta.env.BASE_URL for leader/party images
+### 2026-05-02 00:30 PDT - Research + Architecture + Social Posts
+- Deep research done on election dashboards (NYT, Indian Express, NDTV, TOI)
+- ECI data source analysis: results.eci.gov.in not active yet (404s on all patterns)
+  - Will go live May 3 evening or May 4 morning
+  - ECI blocks server-side requests (403) - needs browser-like headers
+  - Past patterns: ResultAcXXX/constituencywise-AllS22.htm, partywiseresult-S22.htm
+- Alternative sources identified: Indian Express has data API, TOI has CDN JSON
+- Architecture for live data: Cloudflare Worker proxy (already deployed on same domain)
+- Social posts drafted for LinkedIn and Twitter
+- UX improvement plan created based on research
 
-### 2026-05-01 23:32 PDT - Vijay Dual Constituency
-- Vijay shows both Perambur (AC 12) + Trichy East (AC 141)
-- Refactored buildLeaderCard for multi-seat support
+### 2026-05-02 00:20 PDT - Both Deployments Live
+- Cloudflare Workers: LIVE
+- GitHub Pages: LIVE
+- Base path auto-detection working (GitHub Actions vs Cloudflare)
+- All images fixed with import.meta.env.BASE_URL
 
-### 2026-05-01 23:28 PDT - HD Leader Photos
-- Wikipedia 500px photos: Stalin, Vijay, EPS, Seeman
-- Hero-style cards with gradient overlay + party symbol badge
-
-### 2026-05-01 23:15 PDT - Sidebar v3: Local Images + Rival Info
-- Downloaded leader photos + party symbols locally
-- Each card shows leader vs closest rival with votes
-- Changed W/L labels to Won/Lead everywhere
-
-### 2026-05-01 22:50 PDT - v2 Polish
-- Muted modern colors, DM Sans font
-- Map: TN only, no tile layer
-- Charts: fixed sizing, inline labels
-- Leader sidebars: 4 top leaders
-
-### 2026-05-01 22:40 PDT - Phase 1 Complete
-- Full dashboard: stats, alliance bar, map, table, charts, modal
-- 234 constituencies, 936 candidates, mock data
-
-### 2026-05-01 21:50 PDT - Project Initialized
-- Created PLAN.md, LOG.md, DOCS.md
+### Previous entries... (see git history)
 
 ---
 
-## Remaining Tasks
+## Live Data Architecture (for May 4)
 
-### Before May 4 (Priority Order)
-1. [ ] **ECI Live Data** - Discover endpoints (May 3 evening), build transformer
-2. [ ] **Data polling strategy** - Either:
-   - (a) Cloudflare Worker as proxy (best, already have worker/index.js)
-   - (b) GitHub Actions cron to fetch + push mock_results.json every 30s
-   - (c) Direct client-side fetch if ECI allows CORS
-3. [ ] **Social sharing** - LinkedIn post, Twitter, WhatsApp card
-4. [ ] **OG image** - Screenshot for social share preview
+### How it works:
+```
+User Browser (every 30s)
+    → fetches /api/results from our Cloudflare Worker
+    → Worker checks Cache API (30s TTL)
+    → If MISS: Worker fetches from ECI (with browser headers)
+    → Worker transforms ECI HTML/JSON to our format
+    → Caches response, returns with CORS
+    → Browser renders new data
+```
 
-### Nice-to-haves
-- [ ] Loading skeleton screens
-- [ ] Number count-up animations
-- [ ] Service worker for offline resilience
-- [ ] Custom domain ($3-5 .in domain)
+### Key facts:
+- Worker is ALREADY deployed at same domain (tn-elections-2026.56karthicute.workers.dev)
+- Just need to add /api/results route handler
+- ECI hit only once per 30 seconds regardless of user count
+- All users get cached response (near-zero latency)
+- Free tier: 100K Worker requests/day (more than enough)
+
+### What we need on May 3/4:
+1. Open results.eci.gov.in in browser
+2. DevTools > Network > find JSON/XHR endpoints
+3. Note URL pattern and response format
+4. Update Worker to fetch from those endpoints
+5. Update data.js to fetch from /api/results
+6. Push → auto-deploys → live in 30 seconds
 
 ---
 
@@ -97,8 +81,8 @@
 ```bash
 cd /Users/kgnmzn/Desktop/AI/Experiments/TN_Elections
 npm run dev          # Local dev server
-npm run build        # Production build → dist/
-# Push to deploy:
+npm run build        # Production build
+# Push to deploy (both platforms):
 TOKEN=$(cat .github-token)
 git remote set-url origin https://csekeyan:${TOKEN}@github.com/csekeyan/tn-elections-2026.git
 git push
