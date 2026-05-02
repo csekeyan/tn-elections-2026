@@ -5,13 +5,16 @@ import { initMap, updateMap, setClickHandler } from './map.js';
 import { initCharts, updateCharts } from './charts.js';
 import { initModal, openConstituency } from './constituency.js';
 
+// Vite injects the base path from vite.config.js
+const BASE = import.meta.env.BASE_URL;
+
 const LEADERS = [
   {
     name: 'M.K. Stalin',
     party: 'DMK', alliance: 'DMK+',
     constituency: 'Kolathur', acNo: 13,
-    img: '/images/leaders/stalin.jpg',
-    partyImg: '/images/parties/dmk.png',
+    img: BASE + 'images/leaders/stalin.jpg',
+    partyImg: BASE + 'images/parties/dmk.png',
     role: 'Chief Minister',
     side: 'left',
   },
@@ -22,8 +25,8 @@ const LEADERS = [
       { constituency: 'Perambur', acNo: 12, district: 'Chennai' },
       { constituency: 'Trichy East', acNo: 141, district: 'Tiruchirappalli' },
     ],
-    img: '/images/leaders/vijay.jpg',
-    partyImg: '/images/parties/tvk.png',
+    img: BASE + 'images/leaders/vijay.jpg',
+    partyImg: BASE + 'images/parties/tvk.png',
     role: 'TVK President',
     side: 'left',
   },
@@ -31,8 +34,8 @@ const LEADERS = [
     name: 'E.K. Palaniswami',
     party: 'AIADMK', alliance: 'AIADMK+',
     constituency: 'Edappadi', acNo: 86,
-    img: '/images/leaders/eps.jpg',
-    partyImg: '/images/parties/aiadmk.png',
+    img: BASE + 'images/leaders/eps.jpg',
+    partyImg: BASE + 'images/parties/aiadmk.png',
     role: 'AIADMK General Secy',
     side: 'right',
   },
@@ -40,8 +43,8 @@ const LEADERS = [
     name: 'Seeman',
     party: 'NTK', alliance: 'NTK',
     constituency: 'Karaikudi', acNo: 184,
-    img: '/images/leaders/seeman.jpg',
-    partyImg: '/images/parties/ntk.svg',
+    img: BASE + 'images/leaders/seeman.jpg',
+    partyImg: BASE + 'images/parties/ntk.svg',
     role: 'NTK Chief Coordinator',
     side: 'right',
   },
