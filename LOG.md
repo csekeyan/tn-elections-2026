@@ -6,12 +6,25 @@
 ---
 
 ## Current Status: PHASE 1 COMPLETE + v2 Polish Applied
-## Last Completed Step: Vijay dual constituency + refactored multi-seat cards
+## Last Completed Step: Production build + git repo + Worker script ready
 ## Next Step: Phase 2 - Performance polish, mobile testing, then Phase 3 deployment
 
 ---
 
 ## Log Entries
+
+### 2026-05-01 23:36 PDT - Build + Git + Worker Ready for Deploy
+- Production build: 2.0MB total (7KB HTML, 15KB CSS, 21KB JS, 1.4MB GeoJSON, 332KB images)
+- GeoJSON simplified: reduced coordinate precision to 4 decimals, stripped extra props (10% smaller)
+- Git repo initialized, initial commit made (35 files)
+- Cloudflare Worker script written (worker/index.js + wrangler.toml)
+  - Caches ECI data for 30s via Cloudflare Cache API
+  - CORS headers for browser access
+  - Mock mode (pre-election) + live mode (May 4) switch
+  - Parse strategy for ECI HTML/JSON responses
+- README.md created for GitHub repo
+- READY TO DEPLOY: just needs GitHub remote + Cloudflare Pages connection
+
 
 ### 2026-05-01 23:32 PDT - Vijay Dual Constituency + Multi-Seat Support
 - Vijay now shows both constituencies:
