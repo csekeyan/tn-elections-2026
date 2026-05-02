@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TN Elections Dashboard - Project Status</title>
+<title>TN Elections 2026 - Project Status</title>
 <style>
   :root { --bg: #0f1117; --card: #171923; --border: #2d3748; --accent: #6c9cff; --green: #48bb78; --yellow: #ecc94b; --red: #fc8181; --text: #e2e8f0; --muted: #718096; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,187 +25,161 @@
   pre { background: #1a202c; border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 0.78rem; margin: 8px 0; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  ul { padding-left: 20px; }
+  ul, ol { padding-left: 20px; }
   li { margin-bottom: 4px; font-size: 0.85rem; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } body { padding: 14px; } }
 </style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <h1>TN Election Results 2026 - Project Status</h1>
-<div class="subtitle">Last updated: May 2, 2026 1:15 AM PDT | Counting day: May 4, 2026</div>
+<div class="subtitle">Last updated: May 2, 2026 7:00 AM PDT | Counting day: May 4, 2026</div>
 
-<h2>Deployments</h2>
-<div class="grid2">
-  <div class="card">
-    <h3>GitHub Pages <span class="badge badge-live">LIVE</span></h3>
-    <a href="https://csekeyan.github.io/tn-elections-2026/" target="_blank">csekeyan.github.io/tn-elections-2026/</a><br>
-    <span style="color:var(--muted);font-size:0.75rem">Auto-deploys on push via GitHub Actions</span>
-  </div>
-  <div class="card">
-    <h3>Cloudflare Workers <span class="badge badge-pending">NEEDS DEPLOY</span></h3>
-    <a href="https://tn-elections-2026.56karthicute.workers.dev/" target="_blank">tn-elections-2026.56karthicute.workers.dev/</a><br>
-    <span style="color:var(--muted);font-size:0.75rem">Code updated but needs <code>cd worker && npx wrangler deploy</code></span>
-  </div>
+<h2>Architecture</h2>
+<div class="card">
+<pre style="font-size:0.75rem">
+Browser (thousands of users)
+    |
+    v
+Cloudflare Pages (edge cache, 30s TTL)
+    |
+    |-- Static files: index.html, JS, CSS, images
+    |-- /api/results → functions/api/results.js
+    |       |
+    |       v (cache MISS, once per 30s)
+    |   ECI results.eci.gov.in
+    |       |
+    |       v
+    |   Parse → JSON → Cache → Return
+    |
+    |-- /api/health → functions/api/health.js
+</pre>
+<p style="font-size:0.82rem;color:var(--muted);margin-top:8px">ECI is hit at most once every 30 seconds. All users get the cached response. Zero load on ECI regardless of traffic.</p>
 </div>
 
-<h2>What's Built</h2>
+<h2>Deployment</h2>
+<div class="card" style="border-color: var(--yellow)">
+<h3>Current: needs re-deploy as Cloudflare Pages</h3>
+<p style="font-size:0.82rem">The current <code>.workers.dev</code> deployment is Workers (static only, no API). Switch to Pages for API support:</p>
+<pre>
+cd /Users/kgnmzn/Desktop/AI/Experiments/TN_Elections
+npm run build
+PATH="/opt/homebrew/bin:$PATH" npx wrangler pages deploy dist/ --project-name tn-elections-2026
+</pre>
+<p style="font-size:0.78rem;color:var(--muted)">Or: Cloudflare Dashboard > Pages > Create Project > Connect GitHub > csekeyan/tn-elections-2026<br>Build command: <code>npm run build</code> | Output: <code>dist</code></p>
+</div>
+
+<h2>Load Test Results</h2>
 <div class="card">
 <table>
-<thead><tr><th>Feature</th><th>Status</th><th>Notes</th></tr></thead>
+<thead><tr><th>Metric</th><th>Value</th></tr></thead>
 <tbody>
-<tr><td>Interactive TN map (234 constituencies)</td><td><span class="badge badge-done">DONE</span></td><td>Click for detail modal, color-coded by party</td></tr>
-<tr><td>Alliance seat tracker bar</td><td><span class="badge badge-done">DONE</span></td><td>Majority line at 118, auto-updates</td></tr>
-<tr><td>Majority Watch widget</td><td><span class="badge badge-done">DONE</span></td><td>Distance-to-majority counter with progress bar</td></tr>
-<tr><td>Key Races to Watch</td><td><span class="badge badge-done">DONE</span></td><td>Scrollable cards for margin &lt; 2,000</td></tr>
-<tr><td>Number count-up animations</td><td><span class="badge badge-done">DONE</span></td><td>On stat cards and majority watch</td></tr>
-<tr><td>Searchable constituency table</td><td><span class="badge badge-done">DONE</span></td><td>Filter by district, party, status; sortable columns</td></tr>
-<tr><td>Party-wise charts</td><td><span class="badge badge-done">DONE</span></td><td>Seats bar + vote share doughnut (Chart.js)</td></tr>
-<tr><td>Constituency detail modal</td><td><span class="badge badge-done">DONE</span></td><td>Full candidate breakdown, round-wise data</td></tr>
-<tr><td>4 leader sidebars</td><td><span class="badge badge-done">DONE</span></td><td>Stalin, Vijay (dual-seat), EPS, Seeman</td></tr>
-<tr><td>ECI data transformer</td><td><span class="badge badge-done">DONE</span></td><td>data/transform_eci.py tested with Delhi 2025 data</td></tr>
-<tr><td>Map tooltip auto-flip</td><td><span class="badge badge-done">DONE</span></td><td>Tooltips flip below cursor near top edge</td></tr>
-<tr><td>Worker /api/results route</td><td><span class="badge badge-done">DONE</span></td><td>30s edge cache, mock mode, fallback logic</td></tr>
-<tr><td>data.js Worker integration</td><td><span class="badge badge-done">DONE</span></td><td>Auto-detects dev vs prod, fallback to local mock</td></tr>
-<tr><td>Worker deploy to Cloudflare</td><td><span class="badge badge-pending">PENDING</span></td><td><code>cd worker && npx wrangler deploy</code></td></tr>
-<tr><td>Live ECI data pipeline</td><td><span class="badge badge-blocked">MAY 4</span></td><td>Update fetchLiveResults() in worker/index.js, set LIVE_MODE=true</td></tr>
+<tr><td>Response size</td><td>122 KB JSON (234 constituencies)</td></tr>
+<tr><td>Single request</td><td>~5ms</td></tr>
+<tr><td>50 concurrent requests</td><td>3-51ms each</td></tr>
+<tr><td>ECI upstream hits for 50 requests</td><td>1 (one)</td></tr>
+<tr><td>Cache TTL</td><td>30 seconds</td></tr>
+<tr><td>Cache behavior</td><td>First request = MISS (hits ECI). Next 30s = HIT (edge cache).</td></tr>
 </tbody>
 </table>
 </div>
 
-<h2>Latest Changes (May 2 session)</h2>
+<h2>Features</h2>
 <div class="card">
-<ul>
-<li><strong>Majority Watch</strong> - New widget below alliance bar showing distance to 118 seats</li>
-<li><strong>Key Races to Watch</strong> - Horizontal scrollable cards for close contests (margin &lt; 2,000)</li>
-<li><strong>Count-up animations</strong> - Stat card numbers animate on each refresh cycle</li>
-<li><strong>Key Races border fix</strong> - padding-top on scroll container prevents hover clipping</li>
-<li><strong>Map tooltip fix</strong> - direction:'auto' so tooltips don't overflow top edge</li>
-<li><strong>Vijay photo</strong> - Replaced with TVK political poster (high quality, 692x1000)</li>
-<li><strong>NTK logo</strong> - Replaced with green circular farmer/plough logo (ntk.png)</li>
-</ul>
-<p style="color:var(--yellow);font-size:0.82rem;margin-top:10px"><strong>These changes are LOCAL ONLY. Need to push to deploy.</strong></p>
+<table>
+<thead><tr><th>Feature</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Interactive TN map (234 constituencies)</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Alliance seat tracker + majority line</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Majority Watch (distance to 118)</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Key Races to Watch (margin &lt; 2000)</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Number count-up animations</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Searchable/sortable constituency table</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Party-wise charts (seats + vote share)</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Constituency detail modal</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>4 leader sidebars (desktop)</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Leaders tab (mobile)</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>/api/results with 30s edge cache</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>/api/health endpoint</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Map tooltip auto-flip</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>ECI data transformer</td><td><span class="badge badge-done">DONE</span></td></tr>
+<tr><td>Deploy as Cloudflare Pages</td><td><span class="badge badge-pending">PENDING</span></td></tr>
+<tr><td>Live ECI data (fetchLiveResults)</td><td><span class="badge badge-blocked">MAY 4</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 style="color:var(--yellow)">May 4 Checklist</h2>
+<div class="card" style="border-color:var(--yellow)">
+<ol>
+<li><strong>Deploy as Pages</strong> (if not already done):
+<pre>npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026</pre></li>
+<li><strong>Verify</strong>: <code>curl https://tn-elections-2026.pages.dev/api/health</code></li>
+<li><strong>When counting starts</strong> (~8 AM IST): Open <code>results.eci.gov.in</code>, DevTools > Network, find JSON/XHR endpoints</li>
+<li><strong>Update <code>functions/api/results.js</code></strong>:
+  <ul>
+    <li>Set <code>LIVE_MODE = true</code></li>
+    <li>Update <code>ECI_BASE</code> and <code>ECI_PATH</code></li>
+    <li>Update <code>fetchLiveResults()</code> to parse the actual format</li>
+  </ul>
+</li>
+<li><strong>Build and deploy</strong>:
+<pre>npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026</pre></li>
+<li><strong>Done.</strong> Dashboard auto-refreshes every 30s with live data.</li>
+</ol>
 </div>
 
 <h2>Key Files</h2>
 <div class="card">
 <pre>
-/Users/kgnmzn/Desktop/AI/Experiments/TN_Elections/
-  src/
-    index.html          # Main page structure
-    js/app.js           # Main app: stats, alliance bar, majority watch, key races, sidebars, table
-    js/data.js          # Data fetching, polling, party config
-    js/map.js           # Leaflet map with GeoJSON layer
-    js/charts.js        # Chart.js party seats + vote share
-    js/constituency.js  # Detail modal for individual constituency
-    css/style.css       # All styles (dark theme, responsive)
-  public/
-    mock_results.json   # Dashboard-format mock data (234 constituencies)
-    parties.json        # Party colors and alliance mappings
-    tn-constituencies.geojson  # GeoJSON for all 234 ACs
-    images/leaders/     # stalin.jpg, vijay.jpg, eps.jpg, seeman.jpg
-    images/parties/     # dmk.png, tvk.png, aiadmk.png, ntk.png, bjp.png
-  data/
-    transform_eci.py    # ECI HTML → dashboard JSON transformer
-  .github/workflows/    # GitHub Actions deploy
-  wrangler.toml         # Cloudflare Workers config
-  LOG.md                # Full project history
-  PLAN.md               # Original plan and architecture
-  .github-token         # GitHub PAT (gitignored)
+TN_Elections/
+  src/                          # Source (Vite project)
+    index.html                  # Main page
+    js/app.js                   # Stats, alliance bar, majority watch, key races, sidebars, table
+    js/data.js                  # Data fetching (uses /api/results in prod)
+    js/map.js                   # Leaflet map
+    js/charts.js                # Chart.js charts
+    js/constituency.js          # Detail modal
+    css/style.css               # All styles
+  public/                       # Static assets (copied to dist/)
+    mock_results.json           # Mock data (234 constituencies)
+    parties.json                # Party colors + alliances
+    tn-constituencies.geojson   # GeoJSON for map
+    images/leaders/             # Leader photos
+    images/parties/             # Party logos
+  functions/                    # Cloudflare Pages Functions
+    api/results.js              # THE FILE TO UPDATE ON MAY 4
+    api/health.js               # Health check
+  data/transform_eci.py         # ECI HTML → JSON transformer
+  LOG.md                        # Full project history
+  status.html                   # This file
 </pre>
 </div>
 
-<h2>Next Steps (May 3-4)</h2>
+<h2>Dev Commands</h2>
 <div class="card">
-<table>
-<thead><tr><th>#</th><th>Task</th><th>Priority</th><th>When</th></tr></thead>
-<tbody>
-<tr><td>1</td><td><strong>Push latest changes</strong> to GitHub</td><td><span class="badge badge-done">DONE</span></td><td>Pushed commit 1a96c55</td></tr>
-<tr><td>2</td><td><strong>Deploy Worker</strong> - <code>cd worker && npx wrangler deploy</code> (needs Cloudflare OAuth)</td><td><span class="badge badge-pending">DO FIRST</span></td><td>Before May 4</td></tr>
-<tr><td>3</td><td><strong>Test Worker</strong> - <code>curl https://tn-elections-2026.56karthicute.workers.dev/api/health</code></td><td><span class="badge badge-pending">DO FIRST</span></td><td>Right after deploy</td></tr>
-<tr><td>4</td><td><strong>Discover ECI live URLs</strong> - Open results.eci.gov.in, DevTools Network tab</td><td><span class="badge badge-blocked">CRITICAL</span></td><td>May 4 morning (8 AM IST)</td></tr>
-<tr><td>5</td><td><strong>Update fetchLiveResults() in worker/index.js</strong> - Parse real ECI data, set LIVE_MODE=true, redeploy</td><td><span class="badge badge-blocked">CRITICAL</span></td><td>May 4 once URLs known</td></tr>
-<tr><td>6</td><td><strong>Test with live data</strong> - Verify all features render correctly</td><td><span class="badge badge-pending">HIGH</span></td><td>May 4</td></tr>
-<tr><td>7</td><td><strong>Share links</strong> - Post to social media (drafts in LOG.md)</td><td><span class="badge badge-pending">MEDIUM</span></td><td>May 4</td></tr>
-</tbody>
-</table>
-</div>
-
-<h2>Deploy Commands</h2>
-<div class="card">
-<h3>Push to GitHub (deploys both platforms)</h3>
 <pre>
-cd /Users/kgnmzn/Desktop/AI/Experiments/TN_Elections
-git add -A && git commit -m "Add majority watch, key races, animations, fix images"
+# Local dev (Vite hot-reload, uses local mock)
+npx vite --port 5180
+
+# Local dev with Pages Functions (tests /api/results)
+npm run build && npx wrangler pages dev dist/
+
+# Deploy to Cloudflare Pages
+npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026
+
+# Push to GitHub (also deploys GitHub Pages mirror)
 TOKEN=$(cat .github-token)
 git remote set-url origin https://csekeyan:${TOKEN}@github.com/csekeyan/tn-elections-2026.git
 git push
 git remote set-url origin https://github.com/csekeyan/tn-elections-2026.git
 </pre>
-
-<h3>Local dev</h3>
-<pre>
-cd /Users/kgnmzn/Desktop/AI/Experiments/TN_Elections
-npx vite --port 5180
-# Open http://localhost:5180/
-</pre>
-
-<h3>Cloudflare deploy (manual, if needed)</h3>
-<pre>
-npx wrangler deploy
-</pre>
-</div>
-
-<h2>May 4 Workflow (The Only Change Needed)</h2>
-<div class="card" style="border-color:#744210">
-<p style="font-size:0.88rem">On counting day, the <strong>only file to change</strong> is <code>worker/index.js</code>:</p>
-<ol style="font-size:0.85rem;margin:10px 0;padding-left:20px">
-<li>Open <code>results.eci.gov.in</code> in browser, DevTools > Network, find the data URL pattern</li>
-<li>Update <code>ECI_PATH</code> and <code>fetchLiveResults()</code> function to parse the real format</li>
-<li>Set <code>LIVE_MODE = true</code></li>
-<li>Run <code>cd worker && npx wrangler deploy</code></li>
-<li>Done. Dashboard auto-updates every 30s from live ECI data.</li>
-</ol>
-<p style="font-size:0.82rem;color:var(--muted)">The frontend (data.js) already points to the Worker API. No frontend changes needed.</p>
-</div>
-
-<h2>ECI Data Pipeline (for May 4)</h2>
-<div class="card">
-<h3>Known ECI URL pattern (from Delhi 2025)</h3>
-<pre>https://results.eci.gov.in/ResultAcGen{Month}{Year}/ConstituencywiseS22{AC_NUMBER}.htm</pre>
-<p style="font-size:0.82rem;color:var(--muted)">For TN 2026, likely: <code>ResultAcGenMay2026/ConstituencywiseS22{1-234}.htm</code></p>
-<p style="font-size:0.82rem;margin-top:8px">The transformer (<code>data/transform_eci.py</code>) parses ECI HTML pages and outputs the exact JSON format the dashboard expects. Tested and verified with Delhi 2025 data.</p>
-
-<h3>Architecture on counting day</h3>
-<pre>
-Browser → Cloudflare Worker (/api/results)
-              ↓ (cache: 30s TTL)
-         ECI results.eci.gov.in
-              ↓ (fetch 234 pages)
-         Transform → JSON → Return to browser
-</pre>
-</div>
-
-<h2>Party Config</h2>
-<div class="card">
-<table>
-<thead><tr><th>Party</th><th>Color (muted)</th><th>Alliance</th></tr></thead>
-<tbody>
-<tr><td>DMK</td><td><span style="color:#c4515f">#c4515f</span></td><td>DMK+</td></tr>
-<tr><td>AIADMK</td><td><span style="color:#4daa8d">#4daa8d</span></td><td>AIADMK+</td></tr>
-<tr><td>TVK</td><td><span style="color:#c9a84c">#c9a84c</span></td><td>TVK+</td></tr>
-<tr><td>NTK</td><td><span style="color:#8b5e6b">#8b5e6b</span></td><td>NTK</td></tr>
-<tr><td>BJP</td><td><span style="color:#d4874d">#d4874d</span></td><td>(in AIADMK+ or standalone)</td></tr>
-</tbody>
-</table>
 </div>
 
 <footer style="margin-top:30px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:0.72rem;text-align:center">
-  TN Elections 2026 Dashboard Project | GitHub: <a href="https://github.com/csekeyan/tn-elections-2026">csekeyan/tn-elections-2026</a>
+  GitHub: <a href="https://github.com/csekeyan/tn-elections-2026">csekeyan/tn-elections-2026</a>
 </footer>
-
 </body>
 </html>
