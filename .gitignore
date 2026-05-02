@@ -5,3 +5,4 @@ dist/
 data/tn_ac_backup.geojson
 src/assets/tn-constituencies.geojson
 src/assets/parties.json
+.github-token
