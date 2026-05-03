@@ -3,183 +3,310 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TN Elections 2026 - Project Status</title>
+<title>TN Elections 2026 - Command Center</title>
 <style>
   :root { --bg: #0f1117; --card: #171923; --border: #2d3748; --accent: #6c9cff; --green: #48bb78; --yellow: #ecc94b; --red: #fc8181; --text: #e2e8f0; --muted: #718096; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'DM Sans', -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 24px; max-width: 900px; margin: 0 auto; line-height: 1.5; }
+  body { font-family: 'DM Sans', -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 24px; max-width: 900px; margin: 0 auto; line-height: 1.6; }
   h1 { font-size: 1.4rem; margin-bottom: 4px; }
-  h2 { font-size: 1.05rem; margin: 24px 0 10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  h2 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
   h3 { font-size: 0.9rem; margin: 14px 0 6px; }
   .subtitle { color: var(--muted); font-size: 0.82rem; margin-bottom: 20px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; position: relative; }
+  .card-warn { border-color: var(--yellow); }
+  .card-go { border-color: var(--green); }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600; }
   .badge-done { background: #22543d; color: var(--green); }
-  .badge-pending { background: #744210; color: var(--yellow); }
-  .badge-blocked { background: #742a2a; color: var(--red); }
-  .badge-live { background: #2a4365; color: var(--accent); }
+  .badge-todo { background: #744210; color: var(--yellow); }
+  .badge-time { background: #2a4365; color: var(--accent); }
   table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
   th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
-  th { color: var(--muted); font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; }
-  code { background: #2d3748; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
-  pre { background: #1a202c; border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 0.78rem; margin: 8px 0; }
+  th { color: var(--muted); font-weight: 500; font-size: 0.72rem; text-transform: uppercase; }
+  code { background: #2d3748; padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; }
+  pre { background: #1a202c; border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 0.78rem; margin: 8px 0; white-space: pre-wrap; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   ul, ol { padding-left: 20px; }
-  li { margin-bottom: 4px; font-size: 0.85rem; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } body { padding: 14px; } }
+  li { margin-bottom: 6px; font-size: 0.85rem; }
+  .copy-btn { position: absolute; top: 10px; right: 10px; background: var(--accent); color: #0f1117; border: none; padding: 4px 12px; border-radius: 5px; font-size: 0.72rem; font-weight: 600; cursor: pointer; }
+  .copy-btn:hover { opacity: 0.85; }
+  .copy-btn:active { transform: scale(0.95); }
+  .msg-box { background: #1a202c; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin: 8px 0; font-size: 0.84rem; white-space: pre-wrap; line-height: 1.6; }
+  .timeline { display: grid; grid-template-columns: 100px 1fr; gap: 0; font-size: 0.84rem; }
+  .timeline .time { color: var(--accent); font-weight: 600; padding: 10px 0; border-right: 2px solid var(--border); padding-right: 14px; text-align: right; font-variant-numeric: tabular-nums; }
+  .timeline .event { padding: 10px 0 10px 14px; border-bottom: 1px solid var(--border); }
+  .timeline .event:last-child { border-bottom: none; }
+  @media (max-width: 600px) { body { padding: 14px; } }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+function copyMsg(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.textContent.trim());
+  const btn = el.parentElement.querySelector('.copy-btn');
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 1500);
+}
+</script>
 </head>
 <body>
 
-<h1>TN Election Results 2026 - Project Status</h1>
-<div class="subtitle">Last updated: May 2, 2026 7:00 AM PDT | Counting day: May 4, 2026</div>
+<h1>TN Election Results 2026 — Command Center</h1>
+<div class="subtitle">Everything you need for May 4. Messages ready to copy. Timeline clear.</div>
 
-<h2>Architecture</h2>
-<div class="card">
-<pre style="font-size:0.75rem">
-Browser (thousands of users)
-    |
-    v
-Cloudflare Pages (edge cache, 30s TTL)
-    |
-    |-- Static files: index.html, JS, CSS, images
-    |-- /api/results → functions/api/results.js
-    |       |
-    |       v (cache MISS, once per 30s)
-    |   ECI results.eci.gov.in
-    |       |
-    |       v
-    |   Parse → JSON → Cache → Return
-    |
-    |-- /api/health → functions/api/health.js
-</pre>
-<p style="font-size:0.82rem;color:var(--muted);margin-top:8px">ECI is hit at most once every 30 seconds. All users get the cached response. Zero load on ECI regardless of traffic.</p>
-</div>
-
-<h2>Deployment</h2>
-<div class="card" style="border-color: var(--yellow)">
-<h3>Current: needs re-deploy as Cloudflare Pages</h3>
-<p style="font-size:0.82rem">The current <code>.workers.dev</code> deployment is Workers (static only, no API). Switch to Pages for API support:</p>
-<pre>
-cd /Users/kgnmzn/Desktop/AI/Experiments/TN_Elections
-npm run build
-PATH="/opt/homebrew/bin:$PATH" npx wrangler pages deploy dist/ --project-name tn-elections-2026
-</pre>
-<p style="font-size:0.78rem;color:var(--muted)">Or: Cloudflare Dashboard > Pages > Create Project > Connect GitHub > csekeyan/tn-elections-2026<br>Build command: <code>npm run build</code> | Output: <code>dist</code></p>
-</div>
-
-<h2>Load Test Results</h2>
+<h2>Links</h2>
 <div class="card">
 <table>
-<thead><tr><th>Metric</th><th>Value</th></tr></thead>
+<tr><td>Public URL (share this)</td><td><a href="https://tinyurl.com/tn-2026" target="_blank"><strong>tinyurl.com/tn-2026</strong></a></td></tr>
+<tr><td>Direct URL</td><td><a href="https://tn-elections-2026.pages.dev/" target="_blank">tn-elections-2026.pages.dev</a></td></tr>
+<tr><td>GitHub (open source)</td><td><a href="https://github.com/csekeyan/tn-elections-2026" target="_blank">github.com/csekeyan/tn-elections-2026</a></td></tr>
+<tr><td>Cloudflare Dashboard</td><td><a href="https://dash.cloudflare.com/" target="_blank">dash.cloudflare.com</a></td></tr>
+<tr><td>Cache Test</td><td><a href="https://tn-elections-2026.pages.dev/cache-test.html" target="_blank">cache-test.html</a></td></tr>
+</table>
+</div>
+
+<h2>May 3 (Saturday) — Your Timeline</h2>
+<div class="card">
+<div class="timeline">
+  <div class="time">3:00 PM</div>
+  <div class="event"><strong>Upgrade to $5 paid plan</strong><br>Cloudflare Dashboard > Workers & Pages > Plans > Paid ($5)<br>Verify plan shows "Paid" in dashboard</div>
+
+  <div class="time">3:15 PM</div>
+  <div class="event"><strong>Deploy latest code</strong><br><code>npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026 --commit-dirty=true</code><br>Open site on phone + desktop. Verify rotating mock data works.</div>
+
+  <div class="time">5:00 PM</div>
+  <div class="event"><strong>ECI Recon</strong> (IST 5:30 AM — ECI page likely up)<br>Open <a href="https://results.eci.gov.in" target="_blank">results.eci.gov.in</a> in Chrome DevTools > Network<br>Find the data URL pattern. Note the response format (JSON/HTML).<br>Save a sample response.</div>
+
+  <div class="time">5:30 PM</div>
+  <div class="event"><strong>Wire up real ECI</strong><br><code>cp functions/api/results.MAY4.js functions/api/results.js</code><br>Edit: replace <code>REPLACE_WITH_ACTUAL_PATH</code> with real ECI URL<br>If format differs: adjust field names in <code>functions/api/_transform.js</code><br>Test locally: <code>npm run build && npx wrangler pages dev dist/</code></div>
+
+  <div class="time">6:30 PM</div>
+  <div class="event"><strong>Deploy live version</strong><br><code>npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026 --commit-dirty=true</code><br>Test: <code>curl https://tn-elections-2026.pages.dev/api/health</code><br>Open on phone. Check mobile Leaders tab.</div>
+
+  <div class="time">7:00 PM</div>
+  <div class="event"><strong>Final validation</strong> (30 min before counting)<br>Open site in Chrome, Firefox, Safari, phone<br>Verify: auto-refresh, map, table, charts, leader sidebars<br>Cross-check numbers against TV if ECI data is flowing</div>
+
+  <div class="time">7:30 PM</div>
+  <div class="event"><strong style="color:var(--red)">COUNTING STARTS</strong> (8:00 AM IST)<br>Monitor for 10 minutes. Verify data is updating.<br>Cross-check 2-3 constituencies with TV/NDTV.<br><strong>Once confirmed accurate → START SHARING</strong></div>
+
+  <div class="time">7:45 PM</div>
+  <div class="event"><strong style="color:var(--green)">GO LIVE — Share everywhere</strong><br>Post all the messages below. Copy-paste ready.</div>
+
+  <div class="time">8-11 PM</div>
+  <div class="event"><strong>Monitor + Share</strong><br>Drop link in Reddit threads, Telegram groups<br>Reply to election tweets with your link<br>Check Cloudflare analytics every 30 min</div>
+
+  <div class="time">12:30 AM</div>
+  <div class="event"><strong>Majority picture clear</strong> (1 PM IST)<br>Screenshot the dashboard. Share the moment.</div>
+
+  <div class="time">7:30 AM</div>
+  <div class="event"><strong>All results expected</strong> (8 PM IST)<br>Increase CACHE_TTL to 3600. Redeploy. Victory lap.</div>
+</div>
+</div>
+
+<h2>Ready-to-Post Messages</h2>
+
+<h3>Twitter/X</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('tw1')">Copy</button>
+<div class="msg-box" id="tw1">I built a live dashboard for Tamil Nadu Election Results 2026
+
+All 234 constituencies, real-time:
+- Interactive TN map
+- Alliance seat tracker with majority line
+- Key races to watch
+- Leader tracking: Stalin, Vijay, EPS, Seeman
+- Auto-refreshes every 30 seconds
+
+https://tinyurl.com/tn-2026
+
+Open source: github.com/csekeyan/tn-elections-2026
+
+#TNElections2026 #TamilNadu #ElectionResults #TNElectionResults</div>
+</div>
+
+<h3>Twitter/X — Short version (for replies/threads)</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('tw2')">Copy</button>
+<div class="msg-box" id="tw2">Live TN Election Results Dashboard — all 234 seats, interactive map, auto-updates every 30s
+
+https://tinyurl.com/tn-2026
+
+#TNElections2026 #TamilNadu</div>
+</div>
+
+<h3>LinkedIn</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('li1')">Copy</button>
+<div class="msg-box" id="li1">I built a real-time election results dashboard for the Tamil Nadu Assembly Elections 2026.
+
+It tracks all 234 constituencies with:
+- Interactive constituency map of Tamil Nadu
+- Alliance-wise seat tracker (DMK+, AIADMK+, TVK+, NTK)
+- Majority Watch — live distance to the 118-seat majority mark
+- Key Races to Watch — closest contests updated in real-time
+- Leader tracking for Stalin, Vijay, EPS, and Seeman
+- Searchable constituency table with candidate details
+- Auto-refreshes every 30 seconds from ECI data
+
+Tech: Vanilla JS, Leaflet maps, Cloudflare Pages with edge caching. ECI data is fetched once every 30 seconds server-side and cached globally — so the site stays fast regardless of how many people are on it.
+
+Fully open source: https://github.com/csekeyan/tn-elections-2026
+
+Check it out: https://tinyurl.com/tn-2026
+
+#TNElections2026 #TamilNadu #ElectionResults #WebDevelopment #OpenSource</div>
+</div>
+
+<h3>WhatsApp / Telegram (English)</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('wa1')">Copy</button>
+<div class="msg-box" id="wa1">TN Election Results 2026 — Live Dashboard
+
+Track all 234 constituencies in real-time:
+- Interactive map of Tamil Nadu
+- Alliance seat tracker
+- Key close races
+- Stalin, Vijay, EPS, Seeman seat status
+- Auto-updates every 30 seconds
+
+https://tinyurl.com/tn-2026
+
+Works great on mobile. Share with friends!</div>
+</div>
+
+<h3>WhatsApp / Telegram (Tamil)</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('wa2')">Copy</button>
+<div class="msg-box" id="wa2">தமிழ்நாடு சட்டமன்ற தேர்தல் முடிவுகள் 2026 — Live Dashboard
+
+234 தொகுதிகள் — நேரடி தேர்தல் முடிவுகள்
+
+- தமிழ்நாடு வரைபடத்தில் நேரடி முடிவுகள்
+- DMK+, AIADMK+, TVK+, NTK — கூட்டணி வாரியாக இருக்கை கணக்கு
+- முக்கிய போட்டிகள் — மிகக் குறைந்த வாக்கு வித்தியாசம்
+- ஸ்டாலின், விஜய், இபிஎஸ், சீமான் — தலைவர்கள் நிலவரம்
+- ஒவ்வொரு 30 விநாடியும் தானாக புதுப்பிக்கப்படும்
+
+https://tinyurl.com/tn-2026
+
+மொபைலில் சிறப்பாக வேலை செய்யும். நண்பர்களுக்கு பகிருங்கள்!</div>
+</div>
+
+<h3>Reddit (r/Chennai, r/TamilNadu)</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('rd1')">Copy</button>
+<div class="msg-box" id="rd1">Title: I built a live election results dashboard for TN 2026 — all 234 constituencies, interactive map, auto-updates
+
+Body:
+Hey folks, I built a real-time dashboard for the TN election results.
+
+Features:
+- Interactive map of all 234 constituencies
+- Alliance seat tracker with majority line at 118
+- Key races to watch (closest contests)
+- Leader tracking: Stalin, Vijay, EPS, Seeman
+- Searchable table with candidate details
+- Auto-refreshes every 30 seconds
+
+Link: https://tinyurl.com/tn-2026
+
+It's open source: https://github.com/csekeyan/tn-elections-2026
+
+Built with vanilla JS, Leaflet maps, and Cloudflare edge caching. Data comes from ECI and updates globally in under 50ms for every user.
+
+Happy counting day!</div>
+</div>
+
+<h3>Reddit (r/webdev, r/javascript)</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('rd2')">Copy</button>
+<div class="msg-box" id="rd2">Title: [Show-off Saturday] Real-time election dashboard — Vanilla JS, Leaflet, Cloudflare edge caching, 30s auto-refresh
+
+Body:
+Built a live dashboard for the Tamil Nadu state elections (234 constituencies, 70M+ voters).
+
+Tech stack:
+- Vanilla JS + Vite (25KB gzipped, zero frameworks)
+- Leaflet.js for interactive constituency map
+- Chart.js for party-wise visualizations
+- Cloudflare Pages + Pages Functions for hosting and API
+- Cloudflare KV for 30s edge cache with thundering herd protection
+- Data from Election Commission of India, transformed server-side
+
+The architecture: browser polls /api/results every 30s. The Pages Function checks KV cache — if fresh, returns in ~5ms. If stale, one request fetches from ECI while all others get stale data instantly (lock-based thundering herd prevention). ECI is hit at most 2x/minute regardless of user count.
+
+Live: https://tinyurl.com/tn-2026
+Source: https://github.com/csekeyan/tn-elections-2026
+
+Would love feedback on the architecture and UX.</div>
+</div>
+
+<h3>Hacker News (Show HN)</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('hn1')">Copy</button>
+<div class="msg-box" id="hn1">Title: Show HN: Real-time election dashboard for Tamil Nadu 2026 — Vanilla JS, Cloudflare edge
+
+URL: https://github.com/csekeyan/tn-elections-2026
+
+(HN prefers GitHub links. The README has the live link and full architecture.)</div>
+</div>
+
+<h3>Instagram Story / Caption</h3>
+<div class="card" style="position:relative">
+<button class="copy-btn" onclick="copyMsg('ig1')">Copy</button>
+<div class="msg-box" id="ig1">Tamil Nadu Election Results 2026 — LIVE
+
+Built a real-time dashboard tracking all 234 constituencies. Interactive map, alliance tracker, key races.
+
+Auto-updates every 30 seconds.
+
+Link in bio: tinyurl.com/tn-2026
+
+#TNElections2026 #TamilNadu #ElectionResults #Tamil</div>
+</div>
+
+<h2>Where to Post (Checklist)</h2>
+<div class="card">
+<table>
+<thead><tr><th>Platform</th><th>Where</th><th>When</th></tr></thead>
 <tbody>
-<tr><td>Response size</td><td>122 KB JSON (234 constituencies)</td></tr>
-<tr><td>Single request</td><td>~5ms</td></tr>
-<tr><td>50 concurrent requests</td><td>3-51ms each</td></tr>
-<tr><td>ECI upstream hits for 50 requests</td><td>1 (one)</td></tr>
-<tr><td>Cache TTL</td><td>30 seconds</td></tr>
-<tr><td>Cache behavior</td><td>First request = MISS (hits ECI). Next 30s = HIT (edge cache).</td></tr>
+<tr><td>Twitter/X</td><td>Your profile + reply to trending election tweets</td><td>7:45 PM</td></tr>
+<tr><td>LinkedIn</td><td>Your profile</td><td>7:45 PM</td></tr>
+<tr><td>WhatsApp</td><td>All Tamil groups + family + friends</td><td>7:45 PM</td></tr>
+<tr><td>Telegram</td><td>Tamil political groups (search "TN Elections")</td><td>8:00 PM</td></tr>
+<tr><td>Reddit</td><td>r/Chennai, r/TamilNadu, r/india</td><td>8:00 PM</td></tr>
+<tr><td>Reddit</td><td>r/webdev, r/javascript (tech angle)</td><td>8:30 PM</td></tr>
+<tr><td>Facebook</td><td>Tamil Nadu / Chennai groups</td><td>8:00 PM</td></tr>
+<tr><td>Hacker News</td><td>Show HN (GitHub link)</td><td>9:00 PM</td></tr>
+<tr><td>Instagram</td><td>Story with dashboard screenshot</td><td>8:00 PM</td></tr>
+<tr><td>YouTube</td><td>Comment on Tamil election livestreams</td><td>8:00 PM onward</td></tr>
 </tbody>
 </table>
 </div>
 
-<h2>Features</h2>
+<h2>Emergency Fixes</h2>
 <div class="card">
 <table>
-<thead><tr><th>Feature</th><th>Status</th></tr></thead>
+<thead><tr><th>Problem</th><th>Fix</th></tr></thead>
 <tbody>
-<tr><td>Interactive TN map (234 constituencies)</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Alliance seat tracker + majority line</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Majority Watch (distance to 118)</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Key Races to Watch (margin &lt; 2000)</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Number count-up animations</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Searchable/sortable constituency table</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Party-wise charts (seats + vote share)</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Constituency detail modal</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>4 leader sidebars (desktop)</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Leaders tab (mobile)</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>/api/results with 30s edge cache</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>/api/health endpoint</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Map tooltip auto-flip</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>ECI data transformer</td><td><span class="badge badge-done">DONE</span></td></tr>
-<tr><td>Deploy as Cloudflare Pages</td><td><span class="badge badge-pending">PENDING</span></td></tr>
-<tr><td>Live ECI data (fetchLiveResults)</td><td><span class="badge badge-blocked">MAY 4</span></td></tr>
+<tr><td>ECI URL changed</td><td>Check DevTools, update URL in <code>results.js</code>, redeploy (2 min)</td></tr>
+<tr><td>Wrong field names</td><td>Update <code>_transform.js</code>, redeploy</td></tr>
+<tr><td>Data doesn't match TV</td><td>ECI is source of truth. Check your parser.</td></tr>
+<tr><td>Site down</td><td>Check <a href="https://dash.cloudflare.com">Cloudflare dashboard</a>. Redeploy.</td></tr>
+<tr><td>High error rate</td><td>Check function logs in Cloudflare dashboard</td></tr>
+<tr><td>After counting ends</td><td>Change CACHE_TTL to 3600, redeploy</td></tr>
 </tbody>
 </table>
 </div>
 
-<h2 style="color:var(--yellow)">May 4 Checklist</h2>
-<div class="card" style="border-color:var(--yellow)">
-<ol>
-<li><strong>Deploy as Pages</strong> (if not already done):
-<pre>npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026</pre></li>
-<li><strong>Verify</strong>: <code>curl https://tn-elections-2026.pages.dev/api/health</code></li>
-<li><strong>When counting starts</strong> (~8 AM IST): Open <code>results.eci.gov.in</code>, DevTools > Network, find JSON/XHR endpoints</li>
-<li><strong>Update <code>functions/api/results.js</code></strong>:
-  <ul>
-    <li>Set <code>LIVE_MODE = true</code></li>
-    <li>Update <code>ECI_BASE</code> and <code>ECI_PATH</code></li>
-    <li>Update <code>fetchLiveResults()</code> to parse the actual format</li>
-  </ul>
-</li>
-<li><strong>Build and deploy</strong>:
-<pre>npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026</pre></li>
-<li><strong>Done.</strong> Dashboard auto-refreshes every 30s with live data.</li>
-</ol>
-</div>
-
-<h2>Key Files</h2>
+<h2>Deploy Command</h2>
 <div class="card">
-<pre>
-TN_Elections/
-  src/                          # Source (Vite project)
-    index.html                  # Main page
-    js/app.js                   # Stats, alliance bar, majority watch, key races, sidebars, table
-    js/data.js                  # Data fetching (uses /api/results in prod)
-    js/map.js                   # Leaflet map
-    js/charts.js                # Chart.js charts
-    js/constituency.js          # Detail modal
-    css/style.css               # All styles
-  public/                       # Static assets (copied to dist/)
-    mock_results.json           # Mock data (234 constituencies)
-    parties.json                # Party colors + alliances
-    tn-constituencies.geojson   # GeoJSON for map
-    images/leaders/             # Leader photos
-    images/parties/             # Party logos
-  functions/                    # Cloudflare Pages Functions
-    api/results.js              # THE FILE TO UPDATE ON MAY 4
-    api/health.js               # Health check
-  data/transform_eci.py         # ECI HTML → JSON transformer
-  LOG.md                        # Full project history
-  status.html                   # This file
-</pre>
-</div>
-
-<h2>Dev Commands</h2>
-<div class="card">
-<pre>
-# Local dev (Vite hot-reload, uses local mock)
-npx vite --port 5180
-
-# Local dev with Pages Functions (tests /api/results)
-npm run build && npx wrangler pages dev dist/
-
-# Deploy to Cloudflare Pages
-npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026
-
-# Push to GitHub (also deploys GitHub Pages mirror)
-TOKEN=$(cat .github-token)
-git remote set-url origin https://csekeyan:${TOKEN}@github.com/csekeyan/tn-elections-2026.git
-git push
-git remote set-url origin https://github.com/csekeyan/tn-elections-2026.git
-</pre>
+<pre>npm run build && npx wrangler pages deploy dist/ --project-name tn-elections-2026 --commit-dirty=true</pre>
 </div>
 
 <footer style="margin-top:30px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:0.72rem;text-align:center">
-  GitHub: <a href="https://github.com/csekeyan/tn-elections-2026">csekeyan/tn-elections-2026</a>
+  Good luck tomorrow. Ship it, share it, watch the numbers roll in.
 </footer>
+
 </body>
 </html>
