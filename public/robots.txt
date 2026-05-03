@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tn-elections-2026.pages.dev/sitemap.xml
