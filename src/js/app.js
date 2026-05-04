@@ -142,7 +142,7 @@ function buildSeatBlock(seatCfg, leader, data, config) {
           <span class="party-badge" style="background:${color};font-size:0.52rem;padding:1px 5px">${leader.party}</span>
           <span style="font-size:0.65rem;font-weight:500">${leader.name.split(' ').pop()}</span>
         </div>
-        <span style="font-size:0.7rem;font-weight:700;font-variant-numeric:tabular-nums">${r.votes.toLocaleString()}</span>
+        <span style="font-size:0.7rem;font-weight:700;font-variant-numeric:tabular-nums">${r.votes.toLocaleString('en-IN')}</span>
       </div>
       ${r.rival ? `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px;opacity:0.6">
@@ -150,7 +150,7 @@ function buildSeatBlock(seatCfg, leader, data, config) {
           <span class="party-badge" style="background:${rivalColor};font-size:0.52rem;padding:1px 5px">${r.rival.party}</span>
           <span style="font-size:0.62rem">${r.rival.name.length > 12 ? r.rival.name.split(' ').pop() : r.rival.name}</span>
         </div>
-        <span style="font-size:0.65rem;font-variant-numeric:tabular-nums">${r.rival.votes.toLocaleString()}</span>
+        <span style="font-size:0.65rem;font-variant-numeric:tabular-nums">${r.rival.votes.toLocaleString('en-IN')}</span>
       </div>
       <div style="margin-top:4px;height:3px;border-radius:2px;background:var(--bg-hover);overflow:hidden">
         <div style="height:100%;width:${Math.min(100, Math.abs(r.margin) / 500)}%;background:${r.isLeading ? color : rivalColor};border-radius:2px;transition:width 0.6s"></div>
@@ -294,7 +294,7 @@ function renderTable(data) {
       <td style="color:var(--text-secondary)">${c.district || ""}</td>
       <td>${leader ? leader.name : '-'}</td>
       <td>${leader ? `<span class="party-badge" style="background:${color}">${leader.party}</span>` : '-'}</td>
-      <td style="font-weight:600;font-variant-numeric:tabular-nums">${c.margin.toLocaleString()}</td>
+      <td style="font-weight:600;font-variant-numeric:tabular-nums">${c.margin.toLocaleString('en-IN')}</td>
       <td><span class="status-badge ${stCls}">${stTxt}</span></td>
     </tr>`;
   }).join('');
@@ -414,18 +414,18 @@ function renderKeyRaces(data) {
                 <span class="party-badge" style="background:${col1};font-size:0.55rem;padding:1px 5px">${c1.party}</span>
                 <span class="kr-candidate-name">${c1.name}</span>
               </div>
-              <span style="font-weight:600;font-variant-numeric:tabular-nums">${c1.votes.toLocaleString()}</span>
+              <span style="font-weight:600;font-variant-numeric:tabular-nums">${c1.votes.toLocaleString('en-IN')}</span>
             </div>
             <div class="kr-candidate" style="opacity:0.65">
               <div style="display:flex;align-items:center;gap:4px">
                 <span class="party-badge" style="background:${col2};font-size:0.55rem;padding:1px 5px">${c2.party}</span>
                 <span class="kr-candidate-name">${c2.name}</span>
               </div>
-              <span style="font-variant-numeric:tabular-nums">${c2.votes.toLocaleString()}</span>
+              <span style="font-variant-numeric:tabular-nums">${c2.votes.toLocaleString('en-IN')}</span>
             </div>
             <div class="kr-margin">
               <span class="kr-margin-label">Margin</span>
-              <span class="kr-margin-value">${c.margin.toLocaleString()}</span>
+              <span class="kr-margin-value">${c.margin.toLocaleString('en-IN')}</span>
             </div>
           </div>`;
       }).join('')}
@@ -457,19 +457,19 @@ function renderCountingProgress(data) {
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
       <div style="flex:1;min-width:120px">
         <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Rounds</div>
-        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${completedRounds.toLocaleString()} <span style="font-size:0.75rem;color:var(--text-muted)">/ ${totalRounds.toLocaleString()}</span></div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${completedRounds.toLocaleString('en-IN')} <span style="font-size:0.75rem;color:var(--text-muted)">/ ${totalRounds.toLocaleString('en-IN')}</span></div>
       </div>
       <div style="flex:1;min-width:120px">
         <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Votes Counted</div>
-        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--green)">${totalVotes.toLocaleString()}</div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--green)">${totalVotes.toLocaleString('en-IN')}</div>
       </div>
       <div style="flex:1;min-width:120px">
         <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Est. Remaining</div>
-        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-secondary)">${remaining.toLocaleString()}</div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-secondary)">${remaining.toLocaleString('en-IN')}</div>
       </div>
       <div style="flex:1;min-width:120px">
         <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Est. Total</div>
-        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${estimatedTotal.toLocaleString()}</div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${estimatedTotal.toLocaleString('en-IN')}</div>
       </div>
     </div>
     <div style="height:8px;border-radius:4px;background:var(--bg-hover);overflow:hidden">
@@ -523,9 +523,9 @@ function renderKeyRacesTable(data) {
       <td style="color:var(--text-muted);font-size:0.75rem">${c.id}</td>
       <td style="font-weight:600">${c.name}</td>
       <td style="color:var(--text-secondary)">${c.district || ''}</td>
-      <td><span class="party-badge" style="background:${col1};font-size:0.55rem;padding:1px 5px">${c1.party}</span> ${c1.name.length > 18 ? c1.name.substring(0, 18) + '...' : c1.name} <span style="font-weight:600;font-variant-numeric:tabular-nums">${c1.votes.toLocaleString()}</span></td>
-      <td><span class="party-badge" style="background:${col2};font-size:0.55rem;padding:1px 5px">${c2.party}</span> ${c2.name.length > 18 ? c2.name.substring(0, 18) + '...' : c2.name} <span style="font-variant-numeric:tabular-nums">${c2.votes.toLocaleString()}</span></td>
-      <td style="font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)">${c.margin.toLocaleString()}</td>
+      <td><span class="party-badge" style="background:${col1};font-size:0.55rem;padding:1px 5px">${c1.party}</span> ${c1.name.length > 18 ? c1.name.substring(0, 18) + '...' : c1.name} <span style="font-weight:600;font-variant-numeric:tabular-nums">${c1.votes.toLocaleString('en-IN')}</span></td>
+      <td><span class="party-badge" style="background:${col2};font-size:0.55rem;padding:1px 5px">${c2.party}</span> ${c2.name.length > 18 ? c2.name.substring(0, 18) + '...' : c2.name} <span style="font-variant-numeric:tabular-nums">${c2.votes.toLocaleString('en-IN')}</span></td>
+      <td style="font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)">${c.margin.toLocaleString('en-IN')}</td>
       <td><span class="status-badge ${stCls}">${stTxt}</span></td>
     </tr>`;
   }).join('');

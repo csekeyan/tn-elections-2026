@@ -39,7 +39,7 @@ export function openConstituency(acNo) {
               <span class="party-badge" style="background:${color};margin-left:6px">${cand.party}</span>
             </div>
             <div style="text-align:right;flex-shrink:0;margin-left:8px">
-              <span style="font-weight:600;font-size:0.9rem">${cand.votes.toLocaleString()}</span>
+              <span style="font-weight:600;font-size:0.9rem">${cand.votes.toLocaleString('en-IN')}</span>
               <span style="color:var(--text-muted);font-size:0.75rem;margin-left:3px">(${cand.voteShare}%)</span>
             </div>
           </div>
@@ -67,7 +67,7 @@ export function openConstituency(acNo) {
       </div>
       <div style="background:var(--bg-primary);padding:8px 12px;border-radius:6px">
         <div style="font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Margin</div>
-        <div style="font-weight:700;font-size:1rem;margin-top:3px">${c.margin.toLocaleString()}</div>
+        <div style="font-weight:700;font-size:1rem;margin-top:3px">${c.margin.toLocaleString('en-IN')}</div>
       </div>
       <div style="background:var(--bg-primary);padding:8px 12px;border-radius:6px">
         <div style="font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Rounds</div>
