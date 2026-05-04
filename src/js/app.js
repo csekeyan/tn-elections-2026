@@ -341,7 +341,7 @@ function initSort() {
 function updateLastUpdated(data) {
   const el = document.getElementById('lastUpdated');
   if (data.lastUpdated) {
-    el.textContent = `Updated: ${new Date(data.lastUpdated).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+    el.textContent = `Updated: ${new Date(data.lastUpdated).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Kolkata' })} IST`;
   }
 }
 
