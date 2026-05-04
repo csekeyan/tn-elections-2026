@@ -530,7 +530,7 @@ function renderKeyRacesTable(data) {
     const rowColor = getAllianceColor(leaderAlliance);
     const stCls = c.status === 'declared' ? 'status-won' : 'status-counting';
     const stTxt = c.status === 'declared' ? 'DECLARED' : 'COUNTING';
-    return `<tr data-ac="${c.id}" style="cursor:pointer;border-left:3px solid ${rowColor}">
+    return `<tr data-ac="${c.id}" style="cursor:pointer;border-left:4px solid ${rowColor};background:${rowColor}11">
       <td style="color:var(--text-muted);font-size:0.75rem">${c.id}</td>
       <td style="font-weight:600">${c.name}</td>
       <td style="color:var(--text-secondary)">${c.district || ''}</td>
