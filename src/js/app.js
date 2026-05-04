@@ -446,15 +446,14 @@ function renderCountingProgress(data) {
   });
 
   const roundsPct = totalRounds > 0 ? (completedRounds / totalRounds * 100) : 0;
-  const totalElectors = 57306637; // 5.73 crore registered electors
-  const totalPolled = totalElectors; // use electorate as denominator
+  const totalPolled = 49328000; // 4.88cr EVM + ~5L postal votes (estimated)
   const votesPct = totalPolled > 0 ? (totalVotes / totalPolled * 100) : 0;
   const remaining = Math.max(0, totalPolled - totalVotes);
 
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <h3 style="font-size:0.88rem;font-weight:600;margin:0">Counting Progress</h3>
-      <span style="font-size:0.8rem;font-weight:700;color:var(--accent)">${votesPct.toFixed(1)}% turnout counted</span>
+      <span style="font-size:0.8rem;font-weight:700;color:var(--accent)">${votesPct.toFixed(1)}% counted</span>
     </div>
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
       <div style="flex:1;min-width:120px">
@@ -470,7 +469,7 @@ function renderCountingProgress(data) {
         <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-secondary)">${remaining.toLocaleString('en-IN')}</div>
       </div>
       <div style="flex:1;min-width:120px">
-        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Total Electors</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Total Polled (incl. postal)</div>
         <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${totalPolled.toLocaleString('en-IN')}</div>
       </div>
     </div>
