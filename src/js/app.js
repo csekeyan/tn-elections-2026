@@ -573,7 +573,15 @@ function populateKrPartyFilter(data) {
       parties.add(c.candidates[1].party);
     }
   });
-  [...parties].sort().forEach(p => {
+  const priority = ['TVK', 'DMK', 'AIADMK', 'NTK', 'BJP', 'PMK', 'INC', 'VCK', 'CPI', 'CPI(M)'];
+  const sorted = [...parties].sort((a, b) => {
+    const ai = priority.indexOf(a), bi = priority.indexOf(b);
+    if (ai >= 0 && bi >= 0) return ai - bi;
+    if (ai >= 0) return -1;
+    if (bi >= 0) return 1;
+    return a.localeCompare(b);
+  });
+  sorted.forEach(p => {
     const o = document.createElement('option');
     o.value = p; o.textContent = p;
     pf.appendChild(o);
