@@ -1,6 +1,6 @@
 // Main app: wires everything together
 
-import { loadPartyConfig, onUpdate, startPolling, getPartyColor, getAlliance, getAllianceColor, getPartyConfig } from './data.js';
+import { loadPartyConfig, onUpdate, startPolling, stopPolling, getPartyColor, getAlliance, getAllianceColor, getPartyConfig } from './data.js';
 import { initMap, updateMap, setClickHandler } from './map.js';
 import { initCharts, updateCharts } from './charts.js';
 import { initModal, openConstituency } from './constituency.js';
@@ -80,6 +80,14 @@ async function init() {
     updateCharts(data);
     updateLastUpdated(data);
     requestAnimationFrame(animateStatCards);
+
+    // Stop polling and show banner when all declared
+    if (data.countingStatus === 'completed' || (data.summary && data.summary.declared === 234)) {
+      stopPolling();
+      const countdownEl = document.getElementById('countdown');
+      if (countdownEl) countdownEl.textContent = '';
+      showResultsBanner(data);
+    }
   });
 
   await initMap();
@@ -431,6 +439,21 @@ function renderKeyRaces(data) {
       }).join('')}
     </div>
   `;
+}
+
+// --- Results Banner ---
+function showResultsBanner(data) {
+  if (document.getElementById('resultsBanner')) return;
+  const winner = data.allianceSummary.reduce((a, b) => a.total > b.total ? a : b);
+  const banner = document.createElement('div');
+  banner.id = 'resultsBanner';
+  banner.style.cssText = 'background:linear-gradient(135deg, #1a472a 0%, #2d5a3f 100%);color:#fff;padding:12px 20px;text-align:center;border-radius:8px;margin-bottom:16px;font-size:0.85rem;';
+  banner.innerHTML = `
+    <div style="font-weight:700;font-size:1rem;margin-bottom:4px">All 234 Results Declared</div>
+    <div>${winner.name} wins ${winner.total} seats | DMK+ ${data.allianceSummary.find(a=>a.name==='DMK+')?.total || 0} | AIADMK+ ${data.allianceSummary.find(a=>a.name==='AIADMK+')?.total || 0}</div>
+  `;
+  const main = document.querySelector('.main-content');
+  if (main) main.insertBefore(banner, main.firstChild);
 }
 
 // --- Counting Progress ---
