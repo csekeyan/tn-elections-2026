@@ -446,13 +446,14 @@ function renderCountingProgress(data) {
   });
 
   const roundsPct = totalRounds > 0 ? (completedRounds / totalRounds * 100) : 0;
-  const estimatedTotal = roundsPct > 0 ? Math.round(totalVotes / roundsPct * 100) : 0;
-  const remaining = Math.max(0, estimatedTotal - totalVotes);
+  const totalPolled = 48700000; // 4.87 crore total polled votes
+  const votesPct = totalPolled > 0 ? (totalVotes / totalPolled * 100) : 0;
+  const remaining = Math.max(0, totalPolled - totalVotes);
 
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <h3 style="font-size:0.88rem;font-weight:600;margin:0">Counting Progress</h3>
-      <span style="font-size:0.8rem;font-weight:700;color:var(--accent)">${roundsPct.toFixed(1)}% rounds completed</span>
+      <span style="font-size:0.8rem;font-weight:700;color:var(--accent)">${votesPct.toFixed(1)}% votes counted</span>
     </div>
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
       <div style="flex:1;min-width:120px">
@@ -468,12 +469,12 @@ function renderCountingProgress(data) {
         <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-secondary)">${remaining.toLocaleString('en-IN')}</div>
       </div>
       <div style="flex:1;min-width:120px">
-        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Est. Total</div>
-        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${estimatedTotal.toLocaleString('en-IN')}</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Total Polled</div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${totalPolled.toLocaleString('en-IN')}</div>
       </div>
     </div>
     <div style="height:8px;border-radius:4px;background:var(--bg-hover);overflow:hidden">
-      <div style="height:100%;width:${roundsPct.toFixed(1)}%;background:linear-gradient(90deg, var(--green), var(--accent));border-radius:4px;transition:width 0.8s"></div>
+      <div style="height:100%;width:${votesPct.toFixed(1)}%;background:linear-gradient(90deg, var(--green), var(--accent));border-radius:4px;transition:width 0.8s"></div>
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:4px">
       <span style="font-size:0.6rem;color:var(--text-muted)">0%</span>
