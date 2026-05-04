@@ -387,7 +387,7 @@ function renderKeyRaces(data) {
   const close = data.constituencies
     .filter(c => c.margin > 0 && c.margin < 2000 && c.candidates.length >= 2)
     .sort((a, b) => a.margin - b.margin)
-    .slice(0, 10);
+    .slice(0, 25);
 
   if (close.length === 0) { el.innerHTML = ''; return; }
 
