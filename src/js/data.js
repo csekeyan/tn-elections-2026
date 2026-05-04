@@ -2,7 +2,7 @@
 
 const API_URL = '/api/results';
 const LOCAL_MOCK = './mock_results.json';
-const DEFAULT_INTERVAL = 30000;
+const DEFAULT_INTERVAL = 120000;
 
 const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 const DATA_URL = IS_DEV ? LOCAL_MOCK : API_URL;
@@ -12,7 +12,7 @@ let listeners = [];
 let pollTimer = null;
 let countdownTimer = null;
 let pollInterval = DEFAULT_INTERVAL;
-let secondsLeft = 30;
+let secondsLeft = 120;
 
 let partyConfig = null;
 

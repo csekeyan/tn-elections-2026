@@ -31,9 +31,11 @@ export async function onRequestGet(context) {
     return new Response(raw, {
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'public, s-maxage=120, max-age=60',
+        'CDN-Cache-Control': 'public, max-age=120',
         'X-Cache': 'HIT',
         'X-Source': data._source || 'eci-local',
-        'X-Poll-Interval': allDeclared ? '300' : '30',
+        'X-Poll-Interval': allDeclared ? '300' : '120',
       },
     });
   } catch (e) {
