@@ -271,7 +271,7 @@ PARTY_MAP = {
 ALLIANCE_MAP = {
     'DMK': 'DMK+', 'INC': 'DMK+', 'VCK': 'DMK+', 'CPI': 'DMK+',
     'CPI(M)': 'DMK+', 'IUML': 'DMK+', 'MDMK': 'DMK+', 'KMDK': 'DMK+', 'TMC(M)': 'DMK+',
-    'AIADMK': 'AIADMK+', 'BJP': 'AIADMK+', 'PMK': 'AIADMK+', 'DMDK': 'AIADMK+',
+    'AIADMK': 'AIADMK+', 'BJP': 'AIADMK+', 'PMK': 'AIADMK+', 'DMDK': 'AIADMK+', 'AMMK': 'AIADMK+',
     'TVK': 'TVK+', 'NTK': 'NTK',
 }
 
