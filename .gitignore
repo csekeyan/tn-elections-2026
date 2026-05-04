@@ -7,3 +7,4 @@ src/assets/tn-constituencies.geojson
 src/assets/parties.json
 .github-token
 .wrangler/
+__pycache__/

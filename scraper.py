@@ -185,7 +185,7 @@ def scrape_once():
     constituencies = []
     failed = 0
 
-    with ThreadPoolExecutor(max_workers=20) as pool:
+    with ThreadPoolExecutor(max_workers=10) as pool:
         futures = {pool.submit(fetch_constituency, i): i for i in range(1, TOTAL_ACS + 1)}
         for f in as_completed(futures):
             result = f.result()
@@ -219,8 +219,8 @@ def scrape_once():
     return data
 
 def main():
-    interval = 30
-    print(f'ECI Scraper starting. Interval: {interval}s. Ctrl+C to stop.')
+    interval = 240
+    print(f'ECI Scraper starting. Interval: {interval}s (4 min). Ctrl+C to stop.')
     print(f'Fetching {TOTAL_ACS} constituencies from {ECI_BASE}')
     print()
 
@@ -234,9 +234,9 @@ def main():
                 print('All 234 declared! Final scrape.')
                 break
             elif data['countingStatus'] == 'not_started':
-                interval = 60
+                interval = 240
             else:
-                interval = 30
+                interval = 240
 
             print(f'  Next scrape in {interval}s...\n')
             time.sleep(interval)
