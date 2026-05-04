@@ -44,7 +44,7 @@ export function getData() { return currentData; }
 
 async function fetchResults() {
   try {
-    const res = await fetch(DATA_URL + (IS_DEV ? '?t=' + Date.now() : ''));
+    const res = await fetch(DATA_URL + '?t=' + Date.now());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 

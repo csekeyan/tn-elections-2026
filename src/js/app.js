@@ -10,15 +10,6 @@ const BASE = import.meta.env.BASE_URL;
 
 const LEADERS = [
   {
-    name: 'M.K. Stalin',
-    party: 'DMK', alliance: 'DMK+',
-    constituency: 'Kolathur', acNo: 13,
-    img: BASE + 'images/leaders/stalin.jpg',
-    partyImg: BASE + 'images/parties/dmk.png',
-    role: 'Chief Minister',
-    side: 'left',
-  },
-  {
     name: 'Vijay',
     party: 'TVK', alliance: 'TVK+',
     seats: [
@@ -28,6 +19,16 @@ const LEADERS = [
     img: BASE + 'images/leaders/vijay.jpg',
     partyImg: BASE + 'images/parties/tvk.png',
     role: 'TVK President',
+    side: 'left',
+    featured: true,
+  },
+  {
+    name: 'M.K. Stalin',
+    party: 'DMK', alliance: 'DMK+',
+    constituency: 'Kolathur', acNo: 13,
+    img: BASE + 'images/leaders/stalin.jpg',
+    partyImg: BASE + 'images/parties/dmk.png',
+    role: 'Chief Minister',
     side: 'left',
   },
   {
@@ -177,9 +178,10 @@ function buildLeaderCard(leader, data, config, allianceTotals) {
   const seatBlocksHtml = seatList.map(s => buildSeatBlock(s, leader, data, config)).join('');
   const primaryAcNo = seatList[0].acNo;
 
+  const featuredStyle = leader.featured ? 'transform:scale(1.04);box-shadow:0 8px 32px rgba(0,0,0,0.3);border:2px solid ' + color + '44;z-index:2' : '';
   return `
-    <div class="leader-card" onclick="window.__openConstituency && window.__openConstituency(${primaryAcNo})" style="cursor:pointer">
-      <div class="leader-photo-hero">
+    <div class="leader-card" onclick="window.__openConstituency && window.__openConstituency(${primaryAcNo})" style="cursor:pointer;${featuredStyle}">
+      <div class="leader-photo-hero" style="${leader.featured ? 'min-height:200px' : ''}">
         <img src="${leader.img}" alt="${leader.name}">
         <div class="leader-gradient" style="background:linear-gradient(to top, ${color}cc 0%, ${color}44 40%, transparent 100%)"></div>
         <img class="party-symbol-badge" src="${leader.partyImg}" alt="${leader.party}" onerror="this.style.display='none'">
@@ -214,8 +216,11 @@ function renderStats(data) {
   const stats = [
     { label: 'Total Seats', value: data.totalSeats, color: 'var(--accent)' },
     { label: 'Results Declared', value: data.summary.declared, color: 'var(--green)' },
-    { label: 'Counting', value: data.summary.counting, color: 'var(--yellow)' },
   ];
+  // Only show Counting card if there are seats still counting
+  if (data.summary.counting > 0) {
+    stats.push({ label: 'Counting', value: data.summary.counting, color: 'var(--yellow)' });
+  }
   if (data.allianceSummary) {
     data.allianceSummary.forEach(a => {
       if (a.total > 0) {
@@ -460,6 +465,11 @@ function showResultsBanner(data) {
 function renderCountingProgress(data) {
   const el = document.getElementById('countingProgress');
   if (!el || !data.constituencies || data.constituencies.length === 0) return;
+  // Hide when all results declared
+  if (data.countingStatus === 'completed' || data.summary.declared === data.totalSeats) {
+    el.style.display = 'none';
+    return;
+  }
 
   let totalRounds = 0, completedRounds = 0, totalVotes = 0;
   data.constituencies.forEach(c => {
