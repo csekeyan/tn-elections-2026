@@ -312,7 +312,7 @@ def fetch_constituency(ac_no):
     rounds_done = int(m.group(1)) if m else 0
     total_rounds = int(m.group(2)) if m else 25
 
-    is_declared = 'Result Declared' in html
+    is_declared = 'Result Declared' in html or (rounds_done > 0 and rounds_done >= total_rounds)
 
     # Parse candidate rows
     row_re = re.compile(
