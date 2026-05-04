@@ -488,6 +488,7 @@ function renderCountingProgress(data) {
 let krSortCol = 'margin';
 let krSortAsc = true;
 let krPartyFilter = '';
+let krStatusFilter = '';
 
 function renderKeyRacesTable(data) {
   const tbody = document.getElementById('keyRacesBody');
@@ -502,6 +503,11 @@ function renderKeyRacesTable(data) {
     races = races.filter(c =>
       c.candidates[0].party === krPartyFilter || c.candidates[1].party === krPartyFilter
     );
+  }
+
+  // Filter by status
+  if (krStatusFilter) {
+    races = races.filter(c => c.status === krStatusFilter);
   }
 
   races = races.sort((a, b) => a.margin - b.margin).slice(0, 50);
@@ -560,6 +566,14 @@ function initKeyRacesSort() {
   if (pf) {
     pf.addEventListener('change', e => {
       krPartyFilter = e.target.value;
+      const d = window.__currentData; if (d) renderKeyRacesTable(d);
+    });
+  }
+
+  const sf = document.getElementById('krStatusFilter');
+  if (sf) {
+    sf.addEventListener('change', e => {
+      krStatusFilter = e.target.value;
       const d = window.__currentData; if (d) renderKeyRacesTable(d);
     });
   }
