@@ -446,7 +446,7 @@ function renderCountingProgress(data) {
   });
 
   const roundsPct = totalRounds > 0 ? (completedRounds / totalRounds * 100) : 0;
-  const totalPolled = 48700000; // 4.87 crore total polled votes
+  const totalPolled = 48828832; // 4.88 crore total polled votes (ECI)
   const votesPct = totalPolled > 0 ? (totalVotes / totalPolled * 100) : 0;
   const remaining = Math.max(0, totalPolled - totalVotes);
 
