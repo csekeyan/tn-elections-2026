@@ -308,7 +308,7 @@ def fetch_constituency(ac_no):
     ac_name = m.group(1).strip().replace(' (Tamil Nadu)', '') if m else f'AC-{ac_no}'
 
     # Parse round
-    m = re.search(r'Status as on (?:EVM )?Round[^<]*<span>(\d+)</span>\s*/\s*(\d+)', html)
+    m = re.search(r'(?:Status|Round)[^<]*Round[^<]*<span>(\d+)</span>\s*/\s*(\d+)', html)
     rounds_done = int(m.group(1)) if m else 0
     total_rounds = int(m.group(2)) if m else 25
 
