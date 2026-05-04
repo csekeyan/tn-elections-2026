@@ -263,6 +263,7 @@ PARTY_MAP = {
     'Naam Tamilar Katchi': 'NTK',
     'Tamilaga Vettri Kazhagam': 'TVK',
     'Amma Makkal Munnetra Kazhagam': 'AMMK',
+    'Amma Makkal Munnettra Kazagam': 'AMMK',
     'Tamil Maanila Congress (Moopanar)': 'TMC(M)',
     'Bahujan Samaj Party': 'BSP',
     'None of the Above': 'NOTA',
