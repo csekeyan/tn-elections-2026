@@ -64,6 +64,7 @@ async function init() {
   initTabs();
   initFilters();
   initSort();
+  initKeyRacesSort();
   setClickHandler(openConstituency);
 
   onUpdate((data) => {
@@ -71,6 +72,7 @@ async function init() {
     renderAllianceBar(data);
     renderMajorityWatch(data);
     renderKeyRaces(data);
+    renderKeyRacesTable(data);
     renderTable(data);
     renderSidebars(data);
     updateMap();
@@ -428,6 +430,68 @@ function renderKeyRaces(data) {
       }).join('')}
     </div>
   `;
+}
+
+// --- Key Races Table Tab ---
+let krSortCol = 'margin';
+let krSortAsc = true;
+
+function renderKeyRacesTable(data) {
+  const tbody = document.getElementById('keyRacesBody');
+  const countEl = document.getElementById('keyRacesCount');
+  if (!tbody || !data.constituencies) return;
+
+  let races = data.constituencies
+    .filter(c => c.margin > 0 && c.candidates.length >= 2)
+    .sort((a, b) => a.margin - b.margin)
+    .slice(0, 50);
+
+  // Apply sorting
+  races = [...races].sort((a, b) => {
+    let va, vb;
+    switch (krSortCol) {
+      case 'id': va = a.id; vb = b.id; break;
+      case 'name': va = a.name; vb = b.name; break;
+      case 'district': va = a.district || ''; vb = b.district || ''; break;
+      case 'margin': va = a.margin; vb = b.margin; break;
+      default: va = a.margin; vb = b.margin;
+    }
+    return typeof va === 'string' ? (krSortAsc ? va.localeCompare(vb) : vb.localeCompare(va)) : (krSortAsc ? va - vb : vb - va);
+  });
+
+  if (countEl) countEl.textContent = races.length + ' closest contests';
+
+  tbody.innerHTML = races.map(c => {
+    const c1 = c.candidates[0];
+    const c2 = c.candidates[1];
+    const col1 = getPartyColor(c1.party);
+    const col2 = getPartyColor(c2.party);
+    const stCls = c.status === 'declared' ? 'status-won' : 'status-counting';
+    const stTxt = c.status === 'declared' ? 'DECLARED' : 'COUNTING';
+    return `<tr data-ac="${c.id}" style="cursor:pointer">
+      <td style="color:var(--text-muted);font-size:0.75rem">${c.id}</td>
+      <td style="font-weight:600">${c.name}</td>
+      <td style="color:var(--text-secondary)">${c.district || ''}</td>
+      <td><span class="party-badge" style="background:${col1};font-size:0.55rem;padding:1px 5px">${c1.party}</span> ${c1.name.length > 18 ? c1.name.substring(0, 18) + '...' : c1.name} <span style="font-weight:600;font-variant-numeric:tabular-nums">${c1.votes.toLocaleString()}</span></td>
+      <td><span class="party-badge" style="background:${col2};font-size:0.55rem;padding:1px 5px">${c2.party}</span> ${c2.name.length > 18 ? c2.name.substring(0, 18) + '...' : c2.name} <span style="font-variant-numeric:tabular-nums">${c2.votes.toLocaleString()}</span></td>
+      <td style="font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)">${c.margin.toLocaleString()}</td>
+      <td><span class="status-badge ${stCls}">${stTxt}</span></td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('tr').forEach(tr => tr.addEventListener('click', () => openConstituency(parseInt(tr.dataset.ac))));
+}
+
+function initKeyRacesSort() {
+  document.querySelectorAll('#keyRacesTable thead th[data-sort-kr]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sortKr;
+      if (krSortCol === col) krSortAsc = !krSortAsc; else { krSortCol = col; krSortAsc = true; }
+      document.querySelectorAll('#keyRacesTable thead th').forEach(h => h.style.color = '');
+      th.style.color = 'var(--accent)';
+      const d = window.__currentData; if (d) renderKeyRacesTable(d);
+    });
+  });
 }
 
 // --- Number count-up animation ---

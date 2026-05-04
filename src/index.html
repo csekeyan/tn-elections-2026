@@ -126,6 +126,7 @@
         <button class="tab-btn active" data-tab="map">Map</button>
         <button class="tab-btn" data-tab="table">Constituencies</button>
         <button class="tab-btn" data-tab="charts">Charts</button>
+        <button class="tab-btn" data-tab="keyraces">Key Races</button>
         <button class="tab-btn tab-leaders-only" data-tab="leaders">Leaders</button>
       </div>
 
@@ -186,6 +187,32 @@
             <div class="chart-container">
               <canvas id="voteShareChart"></canvas>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Key Races -->
+      <div id="tab-keyraces" class="tab-content" style="display: none;">
+        <div class="alliance-bar-container">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h3 style="font-size:0.88rem;font-weight:600;margin:0">Top 50 Closest Races</h3>
+            <span style="font-size:0.72rem;color:var(--text-muted)" id="keyRacesCount"></span>
+          </div>
+          <div class="table-responsive">
+            <table class="results-table" id="keyRacesTable">
+              <thead>
+                <tr>
+                  <th data-sort-kr="id" style="cursor:pointer">#</th>
+                  <th data-sort-kr="name" style="cursor:pointer">Constituency</th>
+                  <th data-sort-kr="district" style="cursor:pointer">District</th>
+                  <th>Leading</th>
+                  <th>Trailing</th>
+                  <th data-sort-kr="margin" style="cursor:pointer">Margin &#x25B2;</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="keyRacesBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
