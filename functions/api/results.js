@@ -7,7 +7,7 @@ export async function onRequestGet(context) {
   return new Response(JSON.stringify(finalData), {
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'public, s-maxage=86400, max-age=0, must-revalidate',
+      'Cache-Control': 'public, no-cache',
       'X-Cache': 'STATIC',
       'X-Source': 'final',
       'X-Poll-Interval': '3600',
