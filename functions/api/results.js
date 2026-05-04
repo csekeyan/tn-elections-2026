@@ -1,31 +1,53 @@
 // /api/results - Election results with KV cache + thundering herd protection
-// 30s TTL, paid plan
+// PRE-LIVE: returns zeros until ECI data is wired up
 
-const CACHE_TTL = 30; // seconds
+const CACHE_TTL = 30;
 const KV_KEY = 'api:results';
 const LOCK_KEY = 'api:lock';
 const LOCK_TTL = 15;
 
-const LIVE_MODE = true;
-const UPSTREAM_URL = 'https://tn-eci-mock.csekeyan.workers.dev/data';
+// ── Set true and update URL when ECI is live ──
+const LIVE_MODE = false;
+const UPSTREAM_URL = '';
 
 export async function onRequestGet(context) {
   const { env } = context;
+
+  // PRE-LIVE: return zero state
+  if (!LIVE_MODE) {
+    return Response.json({
+      totalSeats: 234,
+      countingStatus: 'waiting',
+      summary: { declared: 0, counting: 0 },
+      allianceSummary: [
+        { name: 'DMK+', won: 0, leading: 0, total: 0 },
+        { name: 'AIADMK+', won: 0, leading: 0, total: 0 },
+        { name: 'TVK+', won: 0, leading: 0, total: 0 },
+        { name: 'NTK', won: 0, leading: 0, total: 0 },
+        { name: 'Others', won: 0, leading: 0, total: 0 },
+      ],
+      constituencies: [],
+      lastUpdated: new Date().toISOString(),
+      _source: 'waiting',
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Cache': 'PRE-LIVE',
+        'X-Poll-Interval': '30',
+      },
+    });
+  }
+
   if (!env.CACHE) return Response.json({ error: 'KV not bound' }, { status: 500 });
 
-  // Check KV cache (edge-cached, free within cacheTtl window)
   const cached = await env.CACHE.get(KV_KEY, { type: 'json', cacheTtl: CACHE_TTL });
   if (cached && cached._cachedAt) {
     const age = Math.floor((Date.now() - cached._cachedAt) / 1000);
     if (age < CACHE_TTL) {
-      return respond(cached, 'HIT', {
-        'X-Cache-Age': age + 's',
-        'Cache-Control': `public, max-age=${Math.max(1, CACHE_TTL - age)}`,
-      });
+      return respond(cached, 'HIT', { 'X-Cache-Age': age + 's', 'Cache-Control': `public, max-age=${Math.max(1, CACHE_TTL - age)}` });
     }
   }
 
-  // Thundering herd: only one request fetches at a time
   const lock = await env.CACHE.get(LOCK_KEY, { cacheTtl: LOCK_TTL });
   if (lock) {
     if (cached) return respond(cached, 'STALE-WAIT', { 'Cache-Control': 'public, max-age=5' });
@@ -35,7 +57,6 @@ export async function onRequestGet(context) {
     return Response.json({ error: 'Loading...' }, { status: 503 });
   }
 
-  // Acquire lock, fetch, cache
   await env.CACHE.put(LOCK_KEY, Date.now().toString(), { expirationTtl: LOCK_TTL });
 
   let data;
@@ -57,7 +78,7 @@ export async function onRequestGet(context) {
 
   const fetchDuration = Date.now() - fetchStart;
   data.lastUpdated = new Date().toISOString();
-  data._source = LIVE_MODE ? 'eci' : 'mock';
+  data._source = 'eci';
   data._fetchDuration = fetchDuration + 'ms';
   data._cachedAt = Date.now();
 
@@ -66,24 +87,13 @@ export async function onRequestGet(context) {
     env.CACHE.delete(LOCK_KEY),
   ]));
 
-  return respond(data, 'MISS', {
-    'X-Fetch-Duration': fetchDuration + 'ms',
-    'Cache-Control': `public, max-age=${CACHE_TTL}`,
-  });
+  return respond(data, 'MISS', { 'X-Fetch-Duration': fetchDuration + 'ms', 'Cache-Control': `public, max-age=${CACHE_TTL}` });
 }
 
 function respond(data, cacheStatus, extraHeaders = {}) {
-  // Adaptive polling hint: if all results declared, tell browser to slow down
-  const allDeclared = data.countingStatus === 'completed' || (data.summary && data.summary.counting === 0);
+  const allDeclared = data.countingStatus === 'completed' || (data.summary && data.summary.counting === 0 && data.summary.declared > 0);
   const pollHint = allDeclared ? 300 : 30;
-
   return new Response(JSON.stringify(data), {
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Cache': cacheStatus,
-      'X-Source': data._source || 'unknown',
-      'X-Poll-Interval': String(pollHint),
-      ...extraHeaders,
-    },
+    headers: { 'Content-Type': 'application/json', 'X-Cache': cacheStatus, 'X-Source': data._source || 'unknown', 'X-Poll-Interval': String(pollHint), ...extraHeaders },
   });
 }
