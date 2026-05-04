@@ -55,7 +55,7 @@ export function openConstituency(acNo) {
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
       <div>
         <h2 style="font-size:1.1rem;font-weight:700">${c.name}</h2>
-        <div style="color:var(--text-muted);font-size:0.8rem;margin-top:2px">${c.district} &middot; #${c.id}</div>
+        <div style="color:var(--text-muted);font-size:0.8rem;margin-top:2px">${c.district ? c.district + " &middot; " : ""}#${c.id}</div>
       </div>
       <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">&times;</button>
     </div>

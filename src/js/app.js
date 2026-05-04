@@ -255,9 +255,9 @@ function getFilteredData(data) {
   let rows = data.constituencies;
   if (filterSearch) {
     const q = filterSearch.toLowerCase();
-    rows = rows.filter(c => c.name.toLowerCase().includes(q) || c.district.toLowerCase().includes(q) || (c.candidates[0]?.name.toLowerCase().includes(q)));
+    rows = rows.filter(c => c.name.toLowerCase().includes(q) || (c.district || '').toLowerCase().includes(q) || (c.candidates[0]?.name.toLowerCase().includes(q)));
   }
-  if (filterDistrict) rows = rows.filter(c => c.district === filterDistrict);
+  if (filterDistrict) rows = rows.filter(c => (c.district || '') === filterDistrict);
   if (filterParty) rows = rows.filter(c => c.candidates[0]?.party === filterParty);
   if (filterStatus) rows = rows.filter(c => c.status === filterStatus);
   rows = [...rows].sort((a, b) => {
@@ -265,7 +265,7 @@ function getFilteredData(data) {
     switch (sortCol) {
       case 'id': va = a.id; vb = b.id; break;
       case 'name': va = a.name; vb = b.name; break;
-      case 'district': va = a.district; vb = b.district; break;
+      case 'district': va = a.district || ''; vb = b.district || ''; break;
       case 'leading': va = a.candidates[0]?.name || ''; vb = b.candidates[0]?.name || ''; break;
       case 'party': va = a.candidates[0]?.party || ''; vb = b.candidates[0]?.party || ''; break;
       case 'margin': va = a.margin; vb = b.margin; break;
@@ -288,7 +288,7 @@ function renderTable(data) {
     return `<tr data-ac="${c.id}">
       <td style="color:var(--text-muted);font-size:0.75rem">${c.id}</td>
       <td style="font-weight:600">${c.name}</td>
-      <td style="color:var(--text-secondary)">${c.district}</td>
+      <td style="color:var(--text-secondary)">${c.district || ""}</td>
       <td>${leader ? leader.name : '-'}</td>
       <td>${leader ? `<span class="party-badge" style="background:${color}">${leader.party}</span>` : '-'}</td>
       <td style="font-weight:600;font-variant-numeric:tabular-nums">${c.margin.toLocaleString()}</td>
@@ -303,7 +303,7 @@ function renderTable(data) {
 function populateFilters(data) {
   const ds = document.getElementById('districtFilter');
   const ps = document.getElementById('partyFilter');
-  if (ds.options.length <= 1) [...new Set(data.constituencies.map(c => c.district))].sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; ds.appendChild(o); });
+  if (ds.options.length <= 1) [...new Set(data.constituencies.map(c => c.district || '').filter(Boolean))].sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; ds.appendChild(o); });
   if (ps.options.length <= 1) [...new Set(data.constituencies.map(c => c.candidates[0]?.party).filter(Boolean))].sort().forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; ps.appendChild(o); });
 }
 
@@ -405,7 +405,7 @@ function renderKeyRaces(data) {
         return `
           <div class="key-race-card" onclick="window.__openConstituency && window.__openConstituency(${c.id})">
             <div class="kr-constituency">${c.name}</div>
-            <div class="kr-district">${c.district} &middot; #${c.id}</div>
+            <div class="kr-district">${c.district ? c.district + " &middot; " : ""}#${c.id}</div>
             <div class="kr-candidate">
               <div style="display:flex;align-items:center;gap:4px">
                 <span class="party-badge" style="background:${col1};font-size:0.55rem;padding:1px 5px">${c1.party}</span>
