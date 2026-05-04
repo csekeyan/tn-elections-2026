@@ -457,8 +457,8 @@ def scrape_once():
     return data
 
 def main():
-    interval = 120
-    print(f'ECI Scraper starting. Interval: {interval}s (2 min). Ctrl+C to stop.')
+    interval = 300
+    print(f'ECI Scraper starting. Interval: {interval}s (5 min). Ctrl+C to stop.')
     print(f'Fetching {TOTAL_ACS} constituencies from {ECI_BASE}')
     print()
 
@@ -472,9 +472,9 @@ def main():
                 print('All 234 declared! Final scrape.')
                 break
             elif data['countingStatus'] == 'not_started':
-                interval = 120
+                interval = 300
             else:
-                interval = 120
+                interval = 300
 
             print(f'  Next scrape in {interval}s...\n')
             time.sleep(interval)
