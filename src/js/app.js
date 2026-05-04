@@ -71,6 +71,7 @@ async function init() {
     renderStats(data);
     renderAllianceBar(data);
     renderMajorityWatch(data);
+    renderCountingProgress(data);
     renderKeyRaces(data);
     renderKeyRacesTable(data);
     renderTable(data);
@@ -428,6 +429,56 @@ function renderKeyRaces(data) {
             </div>
           </div>`;
       }).join('')}
+    </div>
+  `;
+}
+
+// --- Counting Progress ---
+function renderCountingProgress(data) {
+  const el = document.getElementById('countingProgress');
+  if (!el || !data.constituencies || data.constituencies.length === 0) return;
+
+  let totalRounds = 0, completedRounds = 0, totalVotes = 0;
+  data.constituencies.forEach(c => {
+    totalRounds += c.totalRounds || 0;
+    completedRounds += c.roundsCompleted || 0;
+    totalVotes += c.totalVotes || 0;
+  });
+
+  const roundsPct = totalRounds > 0 ? (completedRounds / totalRounds * 100) : 0;
+  const estimatedTotal = roundsPct > 0 ? Math.round(totalVotes / roundsPct * 100) : 0;
+  const remaining = Math.max(0, estimatedTotal - totalVotes);
+
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 style="font-size:0.88rem;font-weight:600;margin:0">Counting Progress</h3>
+      <span style="font-size:0.8rem;font-weight:700;color:var(--accent)">${roundsPct.toFixed(1)}% rounds completed</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
+      <div style="flex:1;min-width:120px">
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Rounds</div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${completedRounds.toLocaleString()} <span style="font-size:0.75rem;color:var(--text-muted)">/ ${totalRounds.toLocaleString()}</span></div>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Votes Counted</div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--green)">${totalVotes.toLocaleString()}</div>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Est. Remaining</div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-secondary)">${remaining.toLocaleString()}</div>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em">Est. Total</div>
+        <div style="font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums">${estimatedTotal.toLocaleString()}</div>
+      </div>
+    </div>
+    <div style="height:8px;border-radius:4px;background:var(--bg-hover);overflow:hidden">
+      <div style="height:100%;width:${roundsPct.toFixed(1)}%;background:linear-gradient(90deg, var(--green), var(--accent));border-radius:4px;transition:width 0.8s"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:4px">
+      <span style="font-size:0.6rem;color:var(--text-muted)">0%</span>
+      <span style="font-size:0.6rem;color:var(--text-muted)">${data.summary.declared} of 234 declared</span>
+      <span style="font-size:0.6rem;color:var(--text-muted)">100%</span>
     </div>
   `;
 }
