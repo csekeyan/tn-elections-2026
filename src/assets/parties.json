@@ -108,7 +108,7 @@
       "name": "AMMK",
       "fullName": "Amma Makkal Munnetra Kazhagam",
       "color": "#5a8a6e",
-      "alliance": "Others",
+      "alliance": "AIADMK+",
       "leader": "T.T.V. Dhinakaran",
       "leaderImg": ""
     },
@@ -144,7 +144,8 @@
         "AIADMK",
         "BJP",
         "PMK",
-        "DMDK"
+        "DMDK",
+        "AMMK"
       ]
     },
     "TVK+": {
