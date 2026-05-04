@@ -487,6 +487,7 @@ function renderCountingProgress(data) {
 // --- Key Races Table Tab ---
 let krSortCol = 'margin';
 let krSortAsc = true;
+let krPartyFilter = '';
 
 function renderKeyRacesTable(data) {
   const tbody = document.getElementById('keyRacesBody');
@@ -494,9 +495,16 @@ function renderKeyRacesTable(data) {
   if (!tbody || !data.constituencies) return;
 
   let races = data.constituencies
-    .filter(c => c.margin > 0 && c.candidates.length >= 2)
-    .sort((a, b) => a.margin - b.margin)
-    .slice(0, 50);
+    .filter(c => c.margin > 0 && c.candidates.length >= 2);
+
+  // Filter by party (check both leading and trailing)
+  if (krPartyFilter) {
+    races = races.filter(c =>
+      c.candidates[0].party === krPartyFilter || c.candidates[1].party === krPartyFilter
+    );
+  }
+
+  races = races.sort((a, b) => a.margin - b.margin).slice(0, 50);
 
   // Apply sorting
   races = [...races].sort((a, b) => {
@@ -532,6 +540,7 @@ function renderKeyRacesTable(data) {
   }).join('');
 
   tbody.querySelectorAll('tr').forEach(tr => tr.addEventListener('click', () => openConstituency(parseInt(tr.dataset.ac))));
+  populateKrPartyFilter(data);
 }
 
 function initKeyRacesSort() {
@@ -543,6 +552,31 @@ function initKeyRacesSort() {
       th.style.color = 'var(--accent)';
       const d = window.__currentData; if (d) renderKeyRacesTable(d);
     });
+  });
+
+  const pf = document.getElementById('krPartyFilter');
+  if (pf) {
+    pf.addEventListener('change', e => {
+      krPartyFilter = e.target.value;
+      const d = window.__currentData; if (d) renderKeyRacesTable(d);
+    });
+  }
+}
+
+function populateKrPartyFilter(data) {
+  const pf = document.getElementById('krPartyFilter');
+  if (!pf || pf.options.length > 1) return;
+  const parties = new Set();
+  data.constituencies.forEach(c => {
+    if (c.candidates.length >= 2) {
+      parties.add(c.candidates[0].party);
+      parties.add(c.candidates[1].party);
+    }
+  });
+  [...parties].sort().forEach(p => {
+    const o = document.createElement('option');
+    o.value = p; o.textContent = p;
+    pf.appendChild(o);
   });
 }
 

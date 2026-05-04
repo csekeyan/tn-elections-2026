@@ -146,7 +146,8 @@ function updateVoteShareChart(data) {
           callbacks: {
             label: (item) => {
               const pct = ((item.raw / totalVotes) * 100).toFixed(1);
-              return ` ${item.label}: ${pct}%`;
+              const votes = item.raw.toLocaleString('en-IN');
+              return ` ${item.label}: ${pct}% (${votes} votes)`;
             }
           }
         }
@@ -161,7 +162,7 @@ function updateVoteShareChart(data) {
 
         meta.data.forEach((arc, i) => {
           const pct = ((dataset.data[i] / totalVotes) * 100).toFixed(1);
-          if (pct < 5) return; // skip tiny slices
+          if (pct < 3) return; // show labels on smaller slices too
 
           const { x, y } = arc.tooltipPosition();
           ctx2.fillStyle = '#fff';
